@@ -1,5 +1,6 @@
 export { clusterConnect } from './clusterConnect.ts'
 export { clusterDisconnect } from './clusterDisconnect.ts'
+export { databasesDetailed } from './databasesDetailed.ts'
 export { getStatus } from './getStatus.ts'
 export { postgresUptime } from './postgresUptime.ts'
 export { postgresVersion } from './postgresVersion.ts'

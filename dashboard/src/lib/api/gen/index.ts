@@ -1,5 +1,7 @@
 export type { ClusterConnectMutationKey } from './hooks/useClusterConnect.ts'
 export type { ClusterDisconnectMutationKey } from './hooks/useClusterDisconnect.ts'
+export type { DatabasesDetailedQueryKey } from './hooks/useDatabasesDetailed.ts'
+export type { DatabasesDetailedSuspenseQueryKey } from './hooks/useDatabasesDetailedSuspense.ts'
 export type { GetStatusQueryKey } from './hooks/useGetStatus.ts'
 export type { GetStatusSuspenseQueryKey } from './hooks/useGetStatusSuspense.ts'
 export type { PostgresUptimeQueryKey } from './hooks/usePostgresUptime.ts'
@@ -14,6 +16,7 @@ export type {
   ConnectionStatusEnumKey,
   ConnectionStatus,
   PostgresSetting,
+  Database,
   GetStatusResponse,
   ClusterConnectData,
   GetPostgresVersionResponse,
@@ -46,10 +49,19 @@ export type {
   PostmasterSettings200,
   PostmasterSettings400,
   PostmasterSettingsQueryResponse,
-  PostmasterSettingsQuery
+  PostmasterSettingsQuery,
+  DatabasesDetailedQueryParamsSortEnumKey,
+  DatabasesDetailedQueryParamsOrderEnumKey,
+  DatabasesDetailedQueryParams,
+  DatabasesDetailed200,
+  DatabasesDetailed400,
+  DatabasesDetailed422,
+  DatabasesDetailedQueryResponse,
+  DatabasesDetailedQuery
 } from './models.ts'
 export { clusterConnect } from './clients/clusterConnect.ts'
 export { clusterDisconnect } from './clients/clusterDisconnect.ts'
+export { databasesDetailed } from './clients/databasesDetailed.ts'
 export { getStatus } from './clients/getStatus.ts'
 export { postgresUptime } from './clients/postgresUptime.ts'
 export { postgresVersion } from './clients/postgresVersion.ts'
@@ -60,6 +72,12 @@ export { useClusterConnect } from './hooks/useClusterConnect.ts'
 export { clusterDisconnectMutationKey } from './hooks/useClusterDisconnect.ts'
 export { clusterDisconnectMutationOptions } from './hooks/useClusterDisconnect.ts'
 export { useClusterDisconnect } from './hooks/useClusterDisconnect.ts'
+export { databasesDetailedQueryKey } from './hooks/useDatabasesDetailed.ts'
+export { databasesDetailedQueryOptions } from './hooks/useDatabasesDetailed.ts'
+export { useDatabasesDetailed } from './hooks/useDatabasesDetailed.ts'
+export { databasesDetailedSuspenseQueryKey } from './hooks/useDatabasesDetailedSuspense.ts'
+export { databasesDetailedSuspenseQueryOptions } from './hooks/useDatabasesDetailedSuspense.ts'
+export { useDatabasesDetailedSuspense } from './hooks/useDatabasesDetailedSuspense.ts'
 export { getStatusQueryKey } from './hooks/useGetStatus.ts'
 export { getStatusQueryOptions } from './hooks/useGetStatus.ts'
 export { useGetStatus } from './hooks/useGetStatus.ts'
@@ -85,3 +103,5 @@ export { postmasterSettingsSuspenseQueryKey } from './hooks/usePostmasterSetting
 export { postmasterSettingsSuspenseQueryOptions } from './hooks/usePostmasterSettingsSuspense.ts'
 export { usePostmasterSettingsSuspense } from './hooks/usePostmasterSettingsSuspense.ts'
 export { connectionStatus } from './models.ts'
+export { databasesDetailedQueryParamsSortEnum } from './models.ts'
+export { databasesDetailedQueryParamsOrderEnum } from './models.ts'

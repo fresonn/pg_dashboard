@@ -6,6 +6,7 @@ import type { ReactNode } from 'react'
 import { UptimeWidget, UptimeWidgetSkeleton } from './widgets/uptime'
 import { ClusterSettings, ClusterSettingsSkeleton } from './widgets/cluster-settings'
 import { SidebarTrigger } from '@/components/ui/shadcn/sidebar'
+import { DatabasesTable } from './databases/table'
 
 export function DashboardGrid({ children }: { children: ReactNode }) {
   return (
@@ -24,7 +25,7 @@ export function ClusterOverview() {
       </Typography>
       <ThemeToggle />
 
-      <div className="mt-20">
+      <div className="mt-2">
         <DashboardGrid>
           <Widget
             title="Version"
@@ -50,6 +51,7 @@ export function ClusterOverview() {
             <ClusterSettings />
           </Widget>
         </DashboardGrid>
+        <DatabasesTable />
       </div>
     </div>
   )

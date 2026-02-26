@@ -57,6 +57,61 @@ export type PostgresSetting = {
   description: string
 }
 
+/**
+ * @description Represents database entity from Postgres system catalog
+ */
+export type Database = {
+  /**
+   * @description This is essentially a Postgres OID.
+   * @type string
+   */
+  id: string
+  /**
+   * @type string
+   */
+  name: string
+  /**
+   * @type string
+   */
+  owner: string
+  /**
+   * @type string
+   */
+  encoding: string
+  /**
+   * @type string
+   */
+  collate: string
+  /**
+   * @type string
+   */
+  ctype: string
+  /**
+   * @type boolean
+   */
+  isTemplate: boolean
+  /**
+   * @type boolean
+   */
+  allowConnections: boolean
+  /**
+   * @type integer
+   */
+  connectionLimit: number
+  /**
+   * @type integer
+   */
+  sizeBytes: number
+  /**
+   * @type string
+   */
+  sizePretty: string
+  /**
+   * @type integer
+   */
+  activeConnections: number
+}
+
 export type GetStatusResponse = {
   /**
    * @description Represents connection state between dashboard and postgres
@@ -285,4 +340,56 @@ export type PostmasterSettingsQueryResponse = PostmasterSettings200
 export type PostmasterSettingsQuery = {
   Response: PostmasterSettings200
   Errors: PostmasterSettings400
+}
+
+export const databasesDetailedQueryParamsSortEnum = {
+  size: 'size',
+  connection: 'connection'
+} as const
+
+export type DatabasesDetailedQueryParamsSortEnumKey =
+  (typeof databasesDetailedQueryParamsSortEnum)[keyof typeof databasesDetailedQueryParamsSortEnum]
+
+export const databasesDetailedQueryParamsOrderEnum = {
+  asc: 'asc',
+  desc: 'desc'
+} as const
+
+export type DatabasesDetailedQueryParamsOrderEnumKey =
+  (typeof databasesDetailedQueryParamsOrderEnum)[keyof typeof databasesDetailedQueryParamsOrderEnum]
+
+export type DatabasesDetailedQueryParams = {
+  /**
+   * @description Field to sort by
+   * @type string | undefined
+   */
+  sort?: DatabasesDetailedQueryParamsSortEnumKey
+  /**
+   * @description Sort direction
+   * @type string | undefined
+   */
+  order?: DatabasesDetailedQueryParamsOrderEnumKey
+}
+
+/**
+ * @description Successful operation
+ */
+export type DatabasesDetailed200 = Database[]
+
+/**
+ * @description Attempt failed
+ */
+export type DatabasesDetailed400 = ErrorBase
+
+/**
+ * @description Some query params are invalid
+ */
+export type DatabasesDetailed422 = RequestValidationError
+
+export type DatabasesDetailedQueryResponse = DatabasesDetailed200
+
+export type DatabasesDetailedQuery = {
+  Response: DatabasesDetailed200
+  QueryParams: DatabasesDetailedQueryParams
+  Errors: DatabasesDetailed400 | DatabasesDetailed422
 }

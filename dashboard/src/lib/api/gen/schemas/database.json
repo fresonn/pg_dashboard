@@ -1,0 +1,43 @@
+{
+  "type": "object",
+  "description": "Represents database entity from Postgres system catalog",
+  "x-go-type": "clusterEntities.DatabaseDetails",
+  "x-go-type-import": {
+    "path": "dashboard/api/internal/scopes/cluster/entities",
+    "name": "DatabaseDetails"
+  },
+  "x-go-type-name": "clusterEntities.DatabaseDetails",
+  "required": [
+    "id",
+    "name",
+    "owner",
+    "encoding",
+    "collate",
+    "ctype",
+    "isTemplate",
+    "allowConnections",
+    "connectionLimit",
+    "sizeBytes",
+    "sizePretty",
+    "activeConnections"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "This is essentially a Postgres OID.",
+      "example": "1"
+    },
+    "name": { "type": "string", "example": "postgres" },
+    "owner": { "type": "string", "example": "postgres" },
+    "encoding": { "type": "string", "example": "UTF8" },
+    "collate": { "type": "string", "example": "en_US.UTF-8" },
+    "ctype": { "type": "string", "example": "en_US.UTF-8" },
+    "isTemplate": { "type": "boolean", "example": false },
+    "allowConnections": { "type": "boolean", "example": true },
+    "connectionLimit": { "type": "integer", "example": -1 },
+    "sizeBytes": { "type": "integer", "example": 7746019 },
+    "sizePretty": { "type": "string", "example": "6.4 MB" },
+    "activeConnections": { "type": "integer", "example": 3 }
+  },
+  "x-readme-ref-name": "Database"
+}
