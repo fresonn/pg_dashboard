@@ -92,3 +92,34 @@ func (h *Handler) PostmasterSettings(ctx context.Context, request openapi.Postma
 
 	return openapi.PostmasterSettings200JSONResponse(settings), nil
 }
+
+func (h *Handler) DatabasesDetailed(ctx context.Context, request openapi.DatabasesDetailedRequestObject) (openapi.DatabasesDetailedResponseObject, error) {
+
+	params := request.Params
+
+	if err := validator.New(validator.WithRequiredStructEnabled()).Struct(&params); err != nil {
+		return openapi.DatabasesDetailed422JSONResponse{
+			Message: "Request validation failed",
+			Reason:  err.Error(),
+		}, nil
+	}
+
+	var filter entities.DatabasesFilter
+
+	if params.Sort != nil {
+		filter.Sort = string(*params.Sort)
+	}
+
+	if params.Order != nil {
+		filter.Order = string(*params.Order)
+	}
+
+	databases, err := h.cluster.DatabasesDetailed(ctx, filter)
+	if err != nil {
+		return openapi.DatabasesDetailed400JSONResponse{
+			Message: err.Error(),
+		}, nil
+	}
+
+	return openapi.DatabasesDetailed200JSONResponse(databases), nil
+}
