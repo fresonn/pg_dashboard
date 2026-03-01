@@ -10,8 +10,8 @@ export function VersionWidgetSkeleton() {
       foregroundColor="var(--skeleton-fg)"
       width="100%"
     >
-      <rect x="0" y="0" width="100%" rx="6" ry="6" height="16" />
-      <rect x="0" y="60%" width="45%" rx="6" ry="6" height="16" />
+      <rect x="0" y="0" width="100%" rx="6" ry="6" height="15" />
+      <rect x="0" y="58%" width="45%" rx="6" ry="6" height="15" />
     </ContentLoader>
   )
 }

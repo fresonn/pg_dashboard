@@ -15,10 +15,10 @@ export function WidgetErrorFallback() {
   )
 }
 
-const widgetContainer = cva('p-4', {
+const widgetContainer = cva('rounded-lg border p-3', {
   variants: {
     withBackground: {
-      true: 'dark:bg-section-box rounded-lg border bg-gray-100',
+      true: 'dark:bg-section-box bg-gray-100',
       false: ''
     }
   }

@@ -10,7 +10,7 @@ import { DatabasesTable } from './databases/table'
 
 export function DashboardGrid({ children }: { children: ReactNode }) {
   return (
-    <div className="grid grid-cols-[repeat(12,minmax(0,220px))] grid-rows-[repeat(6,50px)] gap-3">
+    <div className="grid grid-cols-[repeat(12,minmax(0,220px))] grid-rows-[repeat(12,15px)] gap-3">
       {children}
     </div>
   )
@@ -29,14 +29,16 @@ export function ClusterOverview() {
         <DashboardGrid>
           <Widget
             title="Version"
-            className="col-span-3 row-span-2"
+            className="col-span-3 row-span-4"
+            // withBackground={false}
             skeleton={<VersionWidgetSkeleton />}
           >
             <VersionWidget />
           </Widget>
           <Widget
             title="Uptime"
-            className="col-span-3 row-span-2"
+            className="col-span-3 row-span-4"
+            // withBackground={false}
             skeleton={<UptimeWidgetSkeleton />}
           >
             <UptimeWidget />
@@ -44,8 +46,7 @@ export function ClusterOverview() {
           {/* <div className="animate-in fade-in in-from-top col-span-6 row-span-3 duration-300 dark:bg-neutral-800"></div> */}
           <Widget
             title="Common cluster settings"
-            className="col-span-6 row-span-5"
-            withBackground={true}
+            className="col-span-6 row-span-12"
             skeleton={<ClusterSettingsSkeleton />}
           >
             <ClusterSettings />
