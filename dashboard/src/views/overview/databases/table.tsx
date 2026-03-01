@@ -8,6 +8,7 @@ import {
   getFacetedMinMaxValues
 } from '@tanstack/react-table'
 import { columns } from './columns'
+import { TableToolbar } from './toolbar'
 
 import {
   Table,
@@ -43,50 +44,52 @@ export function DatabasesTable() {
 
   return (
     <div>
-      <p>Table</p>
-      <Table>
-        <TableHeader>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <TableHead key={header.id}>
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(header.column.columnDef.header, header.getContext())}
-                </TableHead>
-              ))}
-            </TableRow>
-          ))}
-        </TableHeader>
-        <TableBody>
-          {table.getRowModel().rows?.length ? (
-            table.getRowModel().rows.map((row) => (
-              <TableRow
-                key={row.id}
-                data-state={row.getIsSelected() && 'selected'}
-                className="cursor-pointer"
-                onClick={() => {
-                  if (row.getValue('allowConnections')) {
-                    handleDatabaseClick(row.getValue('name'))
-                  }
-                }}
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
+      <TableToolbar table={table} />
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <TableHead key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(header.column.columnDef.header, header.getContext())}
+                  </TableHead>
                 ))}
               </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell colSpan={columns.length} className="h-24 text-center">
-                No data
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && 'selected'}
+                  className="cursor-pointer"
+                  onClick={() => {
+                    if (row.getValue('allowConnections')) {
+                      handleDatabaseClick(row.getValue('name'))
+                    }
+                  }}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={columns.length} className="h-24 text-center">
+                  No data
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
     </div>
   )
 }

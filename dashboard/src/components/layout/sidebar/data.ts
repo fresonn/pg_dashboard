@@ -74,7 +74,7 @@ export const sidebarData: SidebarData = {
         },
         {
           title: 'Users',
-          url: '/users',
+          url: '/connect',
           icon: Users
         },
         {
