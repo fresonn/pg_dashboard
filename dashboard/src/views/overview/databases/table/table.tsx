@@ -79,7 +79,7 @@ export function DatabasesTable({
               </TableRow>
             ))}
           </TableHeader>
-          <TableBody>
+          <TableBody loading={isFetching}>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow

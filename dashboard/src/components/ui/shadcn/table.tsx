@@ -1,5 +1,6 @@
 import * as React from 'react'
 
+import { cva } from 'cva'
 import { cn } from '@/lib/utils'
 import clsx from 'clsx'
 
@@ -24,12 +25,24 @@ const TableHeader = React.forwardRef<
 ))
 TableHeader.displayName = 'TableHeader'
 
-const TableBody = React.forwardRef<
-  HTMLTableSectionElement,
-  React.HTMLAttributes<HTMLTableSectionElement>
->(({ className, ...props }, ref) => (
-  <tbody ref={ref} className={cn('[&_tr:last-child]:border-0', className)} {...props} />
-))
+const tableBody = cva('[&_tr:last-child]:border-0', {
+  variants: {
+    loading: {
+      true: 'opacity-70',
+      false: ''
+    }
+  }
+})
+
+export type TableBodyProps = {
+  loading?: boolean
+} & React.HTMLAttributes<HTMLTableSectionElement>
+
+const TableBody = React.forwardRef<HTMLTableSectionElement, TableBodyProps>(
+  ({ className, loading = false, ...props }, ref) => (
+    <tbody ref={ref} className={tableBody({ className, loading })} {...props} />
+  )
+)
 TableBody.displayName = 'TableBody'
 
 const TableFooter = React.forwardRef<
