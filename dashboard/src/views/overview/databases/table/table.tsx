@@ -27,10 +27,16 @@ import type { Database } from './types'
 export type DatabasesTableProps = {
   data: Database[]
   sorting: SortingState
+  isFetching: boolean
   onSortingChange: OnChangeFn<SortingState>
 }
 
-export function DatabasesTable({ data, sorting, onSortingChange }: DatabasesTableProps) {
+export function DatabasesTable({
+  data,
+  sorting,
+  isFetching,
+  onSortingChange
+}: DatabasesTableProps) {
   const table = useReactTable({
     columns,
     data,
@@ -64,7 +70,10 @@ export function DatabasesTable({ data, sorting, onSortingChange }: DatabasesTabl
                   <TableHead key={header.id} className="text-foreground">
                     {header.isPlaceholder
                       ? null
-                      : flexRender(header.column.columnDef.header, header.getContext())}
+                      : flexRender(header.column.columnDef.header, {
+                          ...header.getContext(),
+                          isFetching
+                        })}
                   </TableHead>
                 ))}
               </TableRow>
@@ -93,7 +102,9 @@ export function DatabasesTable({ data, sorting, onSortingChange }: DatabasesTabl
             ) : (
               <TableRow className="absolute inset-0 flex items-center justify-center hover:bg-transparent">
                 <TableCell>
-                  <Typography variant="h3">No databases found</Typography>
+                  <Typography variant="h3" className="text-foreground/70">
+                    No databases found
+                  </Typography>
                 </TableCell>
               </TableRow>
             )}

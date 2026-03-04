@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { keepPreviousData } from '@tanstack/react-query'
 import type { SortingState } from '@tanstack/react-table'
 import { useQueryParams } from './params'
 import { DatabasesTable } from './table/table'
@@ -10,10 +11,22 @@ export function AvailableDatabases() {
 
   const queryParams = useQueryParams(sorting)
 
-  const { data, isLoading } = useDatabasesDetailed(queryParams)
+  const { data, isLoading, isFetching, error } = useDatabasesDetailed(queryParams, {
+    query: {
+      placeholderData: keepPreviousData,
+      staleTime: 60_000
+    }
+  })
   if (isLoading) {
     return <DatabasesTableSkeleton rows={11} />
   }
 
-  return <DatabasesTable data={data ?? []} sorting={sorting} onSortingChange={setSorting} />
+  return (
+    <DatabasesTable
+      data={data ?? []}
+      isFetching={isFetching}
+      sorting={sorting}
+      onSortingChange={setSorting}
+    />
+  )
 }

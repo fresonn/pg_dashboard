@@ -20,7 +20,13 @@ export const columns = [
   }),
   columnHelper.accessor('sizeBytes', {
     enableSorting: true,
-    header: ({ column }) => <SortableHeader column={column} title="Size" />,
+    header: (ctx) => (
+      <SortableHeader
+        title="Size"
+        column={ctx.column}
+        isFetching={(ctx as any).isFetching ?? false}
+      />
+    ),
     cell: ({ row }) => {
       const db = row.original
 
