@@ -52,9 +52,7 @@ export function ClusterOverview() {
           </Widget>
         </DashboardGrid>
         <div className="w-full pt-10">
-          <Typography variant="h2" className="text-theme-color">
-            Available databases
-          </Typography>
+          <Typography variant="h2">Available databases</Typography>
           <div className="pt-4">
             <AvailableDatabases />
           </div>

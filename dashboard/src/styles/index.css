@@ -9,6 +9,7 @@
   --color-theme-color: oklch(79.2% 0.209 151.711);
   --color-theme-color: #00ff85;
   --color-section-box: #131314;
+  --blur-2xs: 2px;
 }
 
 @theme inline {

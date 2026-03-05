@@ -1,6 +1,12 @@
 import ContentLoader from 'react-content-loader'
 
-export function DatabasesTableSkeleton({ rows }: { rows: number }) {
+export function DatabasesTableSkeleton({
+  rows,
+  isError = false
+}: {
+  rows: number
+  isError?: boolean
+}) {
   const rowHeight = 40
   const startY = 16
 
@@ -8,8 +14,8 @@ export function DatabasesTableSkeleton({ rows }: { rows: number }) {
     <ContentLoader
       height={rowHeight * rows + 6}
       width="100%"
-      backgroundColor="var(--skeleton-bg)"
-      foregroundColor="var(--skeleton-fg)"
+      backgroundColor={isError ? 'var(--color-red-500)' : 'var(--skeleton-bg)'}
+      foregroundColor={isError ? 'var(--color-red-400)' : 'var(--skeleton-fg)'}
     >
       <rect x={0} y={0} width="100%" height="1" />
       {Array.from({ length: 10 }).map((_, i) => (
