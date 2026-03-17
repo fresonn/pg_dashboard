@@ -37,16 +37,16 @@ export default [
       '@tanstack/query': queryPlugin
     },
     rules: {
-      'no-unused-vars': [
+      'prettier/prettier': ['warn', {}, { usePrettierrc: true }],
+      'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': [
         'warn',
         {
           argsIgnorePattern: '^_',
           varsIgnorePattern: '^_',
           caughtErrorsIgnorePattern: '^_'
         }
-      ],
-      'prettier/prettier': ['warn', {}, { usePrettierrc: true }],
-      '@typescript-eslint/no-unused-vars': ['warn']
+      ]
     },
     settings: {
       react: {

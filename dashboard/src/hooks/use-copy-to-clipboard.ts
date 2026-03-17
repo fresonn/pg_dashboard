@@ -1,7 +1,7 @@
 import { useCallback, useState, useEffect } from 'react'
 
 export type CopiedValue = string | null
-export type CopyFn = (_: string) => Promise<void>
+export type CopyFn = (value: string) => Promise<void>
 
 export const useCopyToClipboard = (): [CopiedValue, CopyFn] => {
   const [copiedText, setCopiedText] = useState<CopiedValue>(null)
