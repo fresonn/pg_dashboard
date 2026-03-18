@@ -61,8 +61,10 @@ type GetPostgresVersionResponse = clusterEntities.PostgresVersion
 
 // GetStatusResponse defines model for GetStatusResponse.
 type GetStatusResponse struct {
-	// PostgresConnection Represents connection state between dashboard and postgres
-	PostgresConnection ConnectionStatus `json:"postgres_connection"`
+	// ConnectionStatus Represents connection state between dashboard and postgres
+	ConnectionStatus ConnectionStatus `json:"connectionStatus"`
+	Database         *string          `json:"database"`
+	User             *string          `json:"user"`
 }
 
 // PostgresSetting Represents some columns from "pg_catalog.pg_settings"

@@ -1,6 +1,7 @@
 package entities
 
 import (
+	"dashboard/api/internal/postgres"
 	"log/slog"
 	"time"
 )
@@ -40,4 +41,10 @@ type PostgresVersion struct {
 
 type PostgresUptime struct {
 	StartedAt time.Time `json:"startedAt" db:"cluster_started_at"`
+}
+
+type Status struct {
+	CurrentUser      *string
+	CurrentDatabase  *string
+	ConnectionStatus postgres.ConnectionStatus
 }

@@ -26,11 +26,13 @@ paths:
                 success:
                   summary: Status received successfully
                   value:
-                    postgres_connection: connected
+                    user: postgres
+                    database: postgres
+                    connectionStatus: connected
                 connection lost:
                   summary: Status with lost connection
                   value:
-                    postgres_connection: disconnected
+                    connectionStatus: disconnected
         "400":
           description: Request server status failed
           content:
@@ -371,11 +373,19 @@ components:
     GetStatusResponse:
       type: object
       required:
-        - postgres_connection
+        - connectionStatus
       properties:
-        postgres_connection:
+        connectionStatus:
           $ref: "#/components/schemas/ConnectionStatus"
-    ClusterConnectData: # internal/scopes/cluster/entities/entities.go
+        user:
+          nullable: true
+          type: string
+          example: postgres
+        database:
+          nullable: true
+          type: string
+          example: postgres
+    ClusterConnectData:
       x-go-type: clusterEntities.AuthData
       x-go-type-import:
         path: dashboard/api/internal/scopes/cluster/entities

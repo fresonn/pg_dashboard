@@ -38,6 +38,7 @@ func New(config config.AppConfig, logger *slog.Logger) *Manager {
 		logger:   logger,
 		retries:  3,
 		retryDur: 1 * time.Second,
+		status:   StatusDisconnected,
 	}
 
 	if config.PersistentConfig != nil {
@@ -189,6 +190,18 @@ func (m *Manager) Status() ConnectionStatus {
 	defer m.mu.RUnlock()
 
 	return m.status
+}
+
+func (m *Manager) Connection() *config.Connection {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+
+	if m.config.PersistentConfig == nil {
+		return nil
+	}
+
+	conn := m.config.PersistentConfig.Connection
+	return &conn
 }
 
 func (m *Manager) IsConnected() bool {

@@ -55,20 +55,23 @@ func New(options Options) *Cluster {
 	}
 }
 
-func (c *Cluster) PostgresStatus(ctx context.Context) postgres.ConnectionStatus {
+func (c *Cluster) PostgresStatus(ctx context.Context) entities.Status {
 
 	status := c.pgManager.Status()
 
-	c.logger.DebugContext(ctx, "get connection status", "status", status)
+	c.logger.DebugContext(ctx, "get postgres status", "status", status)
 
-	switch status {
-	case postgres.StatusConnected:
-		return postgres.StatusConnected
-	case postgres.StatusConnecting:
-		return postgres.StatusConnecting
-	case postgres.StatusError:
-		return postgres.StatusError
-	default:
-		return postgres.StatusDisconnected
+	var currentUser, currentDatabase *string
+
+	connection := c.pgManager.Connection()
+	if connection != nil {
+		currentUser = &connection.User
+		currentDatabase = &connection.Database
+	}
+
+	return entities.Status{
+		ConnectionStatus: status,
+		CurrentUser:      currentUser,
+		CurrentDatabase:  currentDatabase,
 	}
 }

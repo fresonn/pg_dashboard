@@ -14,7 +14,9 @@ func (h *Handler) GetStatus(ctx context.Context, request openapi.GetStatusReques
 	status := h.cluster.PostgresStatus(ctx)
 
 	resp := openapi.GetStatusResponse{
-		PostgresConnection: openapi.ConnectionStatus(status),
+		User:             status.CurrentUser,
+		Database:         status.CurrentDatabase,
+		ConnectionStatus: openapi.ConnectionStatus(status.ConnectionStatus),
 	}
 
 	return openapi.GetStatus200JSONResponse(resp), nil
@@ -22,7 +24,7 @@ func (h *Handler) GetStatus(ctx context.Context, request openapi.GetStatusReques
 
 func (h *Handler) ClusterConnect(ctx context.Context, request openapi.ClusterConnectRequestObject) (openapi.ClusterConnectResponseObject, error) {
 
-	err := h.cluster.Connect(ctx, entities.AuthData(*request.Body))
+	status, err := h.cluster.Connect(ctx, entities.AuthData(*request.Body))
 	if err != nil {
 
 		var ve validator.ValidationErrors
@@ -39,7 +41,9 @@ func (h *Handler) ClusterConnect(ctx context.Context, request openapi.ClusterCon
 	}
 
 	return openapi.ClusterConnect200JSONResponse{
-		PostgresConnection: openapi.PgConnectionStatusConnected,
+		User:             status.CurrentUser,
+		Database:         status.CurrentDatabase,
+		ConnectionStatus: openapi.PgConnectionStatusConnected,
 	}, nil
 }
 
@@ -53,7 +57,7 @@ func (h *Handler) ClusterDisconnect(ctx context.Context, _request openapi.Cluste
 	}
 
 	return openapi.ClusterDisconnect200JSONResponse{
-		PostgresConnection: openapi.PgConnectionStatusDisconnected,
+		ConnectionStatus: openapi.PgConnectionStatusDisconnected,
 	}, nil
 }
 

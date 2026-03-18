@@ -7,7 +7,7 @@ import (
 	"errors"
 )
 
-func (c *Cluster) Connect(ctx context.Context, authData entities.AuthData) error {
+func (c *Cluster) Connect(ctx context.Context, authData entities.AuthData) (*entities.Status, error) {
 
 	c.logger.Info("try to establish postgres connection")
 
@@ -15,13 +15,13 @@ func (c *Cluster) Connect(ctx context.Context, authData entities.AuthData) error
 
 	if ok := c.pgManager.IsConnected(); ok {
 		c.logger.WarnContext(ctx, "connection already established")
-		return errors.New("connection already established")
+		return nil, errors.New("connection already established")
 	}
 
 	err := c.validate.Struct(&authData)
 	if err != nil {
 		c.logger.ErrorContext(ctx, "connection validation", "error", err)
-		return err
+		return nil, err
 	}
 
 	conn := config.Connection{
@@ -41,10 +41,14 @@ func (c *Cluster) Connect(ctx context.Context, authData entities.AuthData) error
 	err = c.pgManager.UpdateConnection(ctx, conn)
 	if err != nil {
 		c.logger.Error("set connection", "error", err)
-		return err
+		return nil, err
 	}
 
 	c.logger.Info("postgres connection established")
 
-	return nil
+	return &entities.Status{
+		ConnectionStatus: c.pgManager.Status(),
+		CurrentUser:      &conn.User,
+		CurrentDatabase:  &conn.Database,
+	}, nil
 }
