@@ -57,14 +57,16 @@ func New(options Options) *Cluster {
 
 func (c *Cluster) PostgresStatus(ctx context.Context) postgres.ConnectionStatus {
 
-	c.logger.DebugContext(ctx, "get postres connection status")
+	status := c.pgManager.Status()
 
-	switch {
-	case c.pgManager.IsConnected():
+	c.logger.DebugContext(ctx, "get connection status", "status", status)
+
+	switch status {
+	case postgres.StatusConnected:
 		return postgres.StatusConnected
-	case c.pgManager.IsConnecting():
+	case postgres.StatusConnecting:
 		return postgres.StatusConnecting
-	case c.pgManager.IsError():
+	case postgres.StatusError:
 		return postgres.StatusError
 	default:
 		return postgres.StatusDisconnected
