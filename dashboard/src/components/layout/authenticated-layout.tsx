@@ -7,9 +7,9 @@ export function AuthenticatedLayout() {
     <SidebarProvider defaultOpen={getSidebarState()}>
       <div className="flex h-screen">
         <AppSidebar className="relative w-72" />
-        <main className="flex-1 overflow-auto px-2 py-4">
+        <div className="flex-1 overflow-auto p-3 pt-2">
           <Outlet />
-        </main>
+        </div>
       </div>
     </SidebarProvider>
   )

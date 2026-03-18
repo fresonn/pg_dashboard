@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { AlarmClockCheck, Database } from 'lucide-react'
 import { Input } from '@/components/ui/input'
+import { Header } from '@/components/layout/header/header'
 
 export const Route = createFileRoute('/_authenticated/ui')({
   component: RouteComponent
@@ -16,8 +17,8 @@ function RouteComponent() {
   }
 
   return (
-    <div className="p-2">
-      <h3>Connect to postgres</h3>
+    <div>
+      <Header title="UI samples" />
 
       <Button>Click me!</Button>
       <Button variant="destructive">Click me!</Button>
