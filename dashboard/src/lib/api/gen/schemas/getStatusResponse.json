@@ -1,8 +1,8 @@
 {
   "type": "object",
-  "required": ["postgres_connection"],
+  "required": ["connectionStatus"],
   "properties": {
-    "postgres_connection": {
+    "connectionStatus": {
       "type": "string",
       "description": "Represents connection state between dashboard and postgres",
       "example": "connected",
@@ -14,7 +14,9 @@
         "PgConnectionStatusError,"
       ],
       "x-readme-ref-name": "ConnectionStatus"
-    }
+    },
+    "user": { "nullable": true, "type": "string", "example": "postgres" },
+    "database": { "nullable": true, "type": "string", "example": "postgres" }
   },
   "x-readme-ref-name": "GetStatusResponse"
 }

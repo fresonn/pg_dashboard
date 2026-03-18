@@ -1,8 +1,7 @@
 import { lazy, Suspense } from 'react'
 import { Outlet, createRootRouteWithContext } from '@tanstack/react-router'
-import { useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query'
+import { type QueryClient } from '@tanstack/react-query'
 import { clusterStatusQuery } from '@/lib/api/cluster-status'
-import { OfflineApiGuard } from '@/components/offline-api-guard'
 import { Toaster } from 'sonner'
 
 export interface RouterContext {
@@ -28,30 +27,8 @@ export const Route = createRootRouteWithContext<RouterContext>()({
     }
   },
   component: () => {
-    const { clusterStatus } = Route.useRouteContext()
-
-    const queryClient = useQueryClient()
-
-    const { isError, isFetching } = useQuery({
-      ...clusterStatusQuery,
-      placeholderData: clusterStatus,
-      staleTime: Infinity,
-      gcTime: Infinity,
-      refetchOnWindowFocus: false,
-      refetchOnReconnect: false,
-      refetchOnMount: false,
-      retry: false
-    })
-
-    const handleRetry = () => {
-      queryClient.refetchQueries({
-        queryKey: clusterStatusQuery.queryKey
-      })
-    }
-
     return (
       <>
-        <OfflineApiGuard open={isError} onRetry={handleRetry} loading={isFetching} />
         <Outlet />
         <Toaster
           position="bottom-right"

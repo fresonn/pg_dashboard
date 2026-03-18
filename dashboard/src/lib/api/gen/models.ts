@@ -117,7 +117,15 @@ export type GetStatusResponse = {
    * @description Represents connection state between dashboard and postgres
    * @type string
    */
-  postgres_connection: ConnectionStatus
+  connectionStatus: ConnectionStatus
+  /**
+   * @type string
+   */
+  user?: string | null
+  /**
+   * @type string
+   */
+  database?: string | null
 }
 
 export type ClusterConnectData = {
