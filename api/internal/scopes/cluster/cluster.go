@@ -62,8 +62,10 @@ func (c *Cluster) PostgresStatus(ctx context.Context) postgres.ConnectionStatus 
 	switch {
 	case c.pgManager.IsConnected():
 		return postgres.StatusConnected
-	case c.pgManager.Connecting():
+	case c.pgManager.IsConnecting():
 		return postgres.StatusConnecting
+	case c.pgManager.IsError():
+		return postgres.StatusError
 	default:
 		return postgres.StatusDisconnected
 	}

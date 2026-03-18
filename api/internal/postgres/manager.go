@@ -44,10 +44,13 @@ func New(config config.AppConfig, logger *slog.Logger) *Manager {
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
 
+		logger.Info("found persistent config, trying to connect..")
+
 		if err := m.UpdateConnection(ctx, config.PersistentConfig.Connection); err != nil {
-			logger.Error("failed to connect from sqlc", "error", err)
+			logger.Error("connection failed", "error", err)
+			logger.Warn("make sure that the credentials are not outdated or corrupted")
 		} else {
-			logger.Info("✅ load from persistent config")
+			logger.Info("✅ connected from persistent config")
 		}
 	}
 
@@ -79,41 +82,32 @@ func (m *Manager) UpdateConnection(ctx context.Context, newConn config.Connectio
 	m.mu.Unlock()
 
 	dsn := connectionDSN(newConn)
-	var db *sqlx.DB
-	var err error
 
-	for i := 0; i <= m.retries; i++ {
-		db, err = sqlx.Open("pgx", dsn)
+	db, err := sqlx.Open("pgx", dsn)
+	if err != nil {
+		return fmt.Errorf("invalid dsn: %w", err)
+	}
 
-		if err != nil {
-			select {
-			case <-ctx.Done():
-				return ctx.Err()
-			case <-time.After(m.retryDur):
-				continue
-			}
-		}
-
-		pingErr := db.PingContext(ctx)
-		if pingErr == nil {
+	for range m.retries {
+		err = db.PingContext(ctx)
+		if err == nil {
 			break
 		}
 
-		db.Close()
-		err = pingErr
-
 		select {
 		case <-ctx.Done():
+			db.Close()
 			return ctx.Err()
 		case <-time.After(m.retryDur):
 		}
 	}
 
 	if err != nil {
+		db.Close()
 		m.mu.Lock()
-		m.status = StatusDisconnected
+		m.status = StatusError
 		m.mu.Unlock()
-		return fmt.Errorf("failed to connect to postgres: %w", err)
+		return err
 	}
 
 	db.SetMaxOpenConns(20)
@@ -193,6 +187,7 @@ func (m *Manager) HealthCheck(ctx context.Context) error {
 func (m *Manager) Status() ConnectionStatus {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
+
 	return m.status
 }
 
@@ -200,6 +195,10 @@ func (m *Manager) IsConnected() bool {
 	return m.Status() == StatusConnected
 }
 
-func (m *Manager) Connecting() bool {
+func (m *Manager) IsConnecting() bool {
 	return m.Status() == StatusConnecting
+}
+
+func (m *Manager) IsError() bool {
+	return m.Status() == StatusError
 }
