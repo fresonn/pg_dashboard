@@ -19,7 +19,6 @@ import {
   InputGroupButton,
   InputGroupInput
 } from '@/components/ui/shadcn/input-group'
-import { PostgresLogo } from '@/components/ui/pg-logo'
 
 export function ConnectView() {
   const navigate = useNavigate()
@@ -61,12 +60,17 @@ export function ConnectView() {
 
   return (
     <div className="bg-section-box grid h-screen grid-cols-[2fr_1fr]">
-      <form onSubmit={handleSubmit(onSubmit)} className="relative flex items-center justify-center">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="relative flex flex-col items-center justify-center"
+      >
         <div className="w-full max-w-[700px] px-12 py-10">
           <div className="flex items-center justify-center">
-            <PostgresLogo className="mr-2 size-16" />
+            <div className="mr-2 size-14">
+              <img src="/logo.svg" alt="App logo" />
+            </div>
             <Typography variant="h1" as="h2">
-              Simple Dashboard
+              PgDashboard
             </Typography>
           </div>
           <div className="mb-10 pt-10">
@@ -213,7 +217,15 @@ export function ConnectView() {
             Connect
           </Button>
         </div>
+
+        <div className="absolute bottom-3">
+          <Typography variant="muted" className="text-xs">
+            PostgreSQL logo © PostgreSQL Global Development Group, used for illustrative purposes.
+            This project is not affiliated with PostgreSQL.
+          </Typography>
+        </div>
       </form>
+
       <div className="flex items-center justify-center">
         <div className={styles.view} />
       </div>
