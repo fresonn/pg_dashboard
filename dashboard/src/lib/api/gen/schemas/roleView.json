@@ -10,7 +10,7 @@
     "id": { "type": "string" },
     "name": { "type": "string" },
     "memberOf": { "type": "array", "items": { "type": "string" } },
-    "flags": { "type": "array", "items": { "type": "string" } },
+    "flags": { "type": "array", "items": { "nullable": true, "type": "string" } },
     "accessLevel": {
       "type": "string",
       "enum": ["admin", "elevated", "standard", "limited"],

@@ -544,6 +544,7 @@ components:
         flags:
           type: array
           items:
+            nullable: true
             type: string
         accessLevel:
           $ref: "#/components/schemas/RoleAccessLevel"
