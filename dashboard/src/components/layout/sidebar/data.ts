@@ -79,7 +79,7 @@ export const sidebarData: SidebarData = {
           icon: MessagesSquare
         },
         {
-          title: 'Users',
+          title: 'Roles',
           url: '/connect',
           icon: Users
         },
