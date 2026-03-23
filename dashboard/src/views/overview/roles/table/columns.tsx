@@ -1,5 +1,5 @@
 import type { Role } from './types'
-import { RoleFlag } from '../ui/flag'
+import { RoleAttributeFlag } from '../ui/attribute-flag'
 import { createColumnHelper } from '@tanstack/react-table'
 import { MembershipList } from '../ui/membership-list'
 import { Badge } from '@/components/ui/shadcn/badge'
@@ -16,13 +16,13 @@ export const columns = [
     header: 'Access Level',
     cell: (props) => capitalize(props.getValue())
   }),
-  columnHelper.accessor('flags', {
-    header: 'Flags',
+  columnHelper.accessor('attributes', {
+    header: 'Attributes',
     cell: ({ row, getValue }) => {
-      const flags = getValue()
+      const attributes = getValue()
       const { isGroup } = row.original
 
-      if (flags === null) {
+      if (attributes === null) {
         if (isGroup)
           return (
             <Badge variant="secondary" className="pointer-events-none py-0!">
@@ -40,9 +40,9 @@ export const columns = [
               </Badge>
             </li>
           )}
-          {flags.map((flag, ind) => (
+          {attributes.map((attr, ind) => (
             <li key={ind} className="mr-1">
-              <RoleFlag flag={flag} iconSize={20} />
+              <RoleAttributeFlag attribute={attr} iconSize={20} />
             </li>
           ))}
         </ul>

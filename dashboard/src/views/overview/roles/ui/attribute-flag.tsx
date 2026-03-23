@@ -8,27 +8,27 @@ import {
   UserStar,
   type LucideIcon
 } from 'lucide-react'
+import { type RoleAttributes } from '@/lib/api/gen'
 
-export const roleFlag = {
-  superuser: 'superuser',
-  login: 'login',
-  createRole: 'create_role',
-  createDb: 'create_db',
-  replication: 'replication'
-} as const
-
-type RoleFlagKey = (typeof roleFlag)[keyof typeof roleFlag]
-
-const roleFlagConfig: Record<RoleFlagKey, { icon: LucideIcon; color: string; label: string }> = {
+const roleAttributeConfig: Record<
+  RoleAttributes,
+  { icon: LucideIcon; color: string; label: string }
+> = {
   superuser: { icon: UserStar, color: 'text-sky-400', label: 'Super user' },
   login: { icon: LogIn, color: 'text-teal-400', label: 'Log in' },
-  create_role: { icon: UserRoundPlus, color: 'text-yellow-400', label: 'Create role' },
-  create_db: { icon: Database, color: 'text-cyan-400', label: 'Create database' },
+  createRole: { icon: UserRoundPlus, color: 'text-yellow-400', label: 'Create role' },
+  createDatabase: { icon: Database, color: 'text-cyan-400', label: 'Create database' },
   replication: { icon: DatabaseBackup, color: 'text-violet-400', label: 'Replication' }
 }
 
-export function RoleFlag({ flag, iconSize = 22 }: { flag: string; iconSize?: number }) {
-  const config = roleFlagConfig[flag as RoleFlagKey]
+export function RoleAttributeFlag({
+  attribute,
+  iconSize = 22
+}: {
+  attribute: RoleAttributes
+  iconSize?: number
+}) {
+  const config = roleAttributeConfig[attribute]
   if (!config) return null
 
   const { icon: Icon, color, label } = config

@@ -240,6 +240,21 @@ export type RoleAccessLevelEnumKey = (typeof roleAccessLevelEnum)[keyof typeof r
  */
 export type RoleAccessLevel = RoleAccessLevelEnumKey
 
+export const roleAttributesEnum = {
+  superuser: 'superuser',
+  login: 'login',
+  createRole: 'createRole',
+  createDatabase: 'createDatabase',
+  replication: 'replication'
+} as const
+
+export type RoleAttributesEnumKey = (typeof roleAttributesEnum)[keyof typeof roleAttributesEnum]
+
+/**
+ * @description https://www.postgresql.org/docs/current/role-attributes.html#ROLE-ATTRIBUTES
+ */
+export type RoleAttributes = RoleAttributesEnumKey
+
 export type RoleView = {
   /**
    * @type string
@@ -269,7 +284,7 @@ export type RoleView = {
   /**
    * @type array
    */
-  flags: string[]
+  attributes: RoleAttributes[]
   /**
    * @description Admin > Elevated > Standard > Limited
    * @type string

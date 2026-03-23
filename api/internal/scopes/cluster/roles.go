@@ -18,8 +18,10 @@ func (c *Cluster) Roles(ctx context.Context) ([]entities.RoleView, error) {
 	views := make([]entities.RoleView, 0, len(roles))
 
 	for _, role := range roles {
-		views = append(views, computeRoleAccessLevel(role))
+		views = append(views, computeRoleView(role))
 	}
+
+	c.logger.DebugContext(ctx, "got cluster roles", "count", len(roles))
 
 	return views, nil
 }
@@ -42,7 +44,7 @@ func buildMembership(role entities.Role) []entities.RoleMembership {
 	return res
 }
 
-func computeRoleAccessLevel(role entities.Role) entities.RoleView {
+func computeRoleView(role entities.Role) entities.RoleView {
 	rv := entities.RoleView{
 		ID:          utils.IntToString(role.ID),
 		Name:        role.Name,
@@ -50,25 +52,25 @@ func computeRoleAccessLevel(role entities.Role) entities.RoleView {
 		IsGroupRole: !role.CanLogin,
 	}
 
-	var flags []entities.RoleFlag
+	var attributes []entities.RoleAttribute
 
 	if role.IsSuper {
-		flags = append(flags, entities.RoleFlagSuperuser)
+		attributes = append(attributes, entities.RoleAttributeSuperuser)
 	}
 	if role.CanLogin {
-		flags = append(flags, entities.RoleFlagLogin)
+		attributes = append(attributes, entities.RoleAttributeLogin)
 	}
 	if role.CanCreateRole {
-		flags = append(flags, entities.RoleFlagCreateRole)
+		attributes = append(attributes, entities.RoleAttributeCreateRole)
 	}
 	if role.CanCreateDB {
-		flags = append(flags, entities.RoleFlagCreateDB)
+		attributes = append(attributes, entities.RoleAttributeCreateDB)
 	}
 	if role.Replication {
-		flags = append(flags, entities.RoleFlagReplication)
+		attributes = append(attributes, entities.RoleAttributeReplication)
 	}
 
-	rv.Flags = flags
+	rv.Attributes = attributes
 
 	rv.AccessLevel = entities.RoleAccessLevelLimited
 

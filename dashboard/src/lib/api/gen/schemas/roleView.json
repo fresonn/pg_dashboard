@@ -1,6 +1,6 @@
 {
   "type": "object",
-  "required": ["id", "name", "isGroup", "accessLevel", "membership", "flags"],
+  "required": ["id", "name", "isGroup", "accessLevel", "membership", "attributes"],
   "x-go-type": "entities.RoleView",
   "x-go-type-import": {
     "path": "dashboard/api/internal/scopes/cluster/entities",
@@ -18,7 +18,20 @@
         "properties": { "name": { "type": "string" }, "description": { "type": "string" } }
       }
     },
-    "flags": { "type": "array", "items": { "nullable": true, "type": "string" } },
+    "attributes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "description": "https://www.postgresql.org/docs/current/role-attributes.html#ROLE-ATTRIBUTES",
+        "enum": ["superuser", "login", "createRole", "createDatabase", "replication"],
+        "x-go-type": "clusterEntities.RoleAttribute",
+        "x-go-type-import": {
+          "path": "dashboard/api/internal/scopes/cluster/entities",
+          "name": "clusterEntities"
+        },
+        "x-readme-ref-name": "RoleAttributes"
+      }
+    },
     "accessLevel": {
       "type": "string",
       "description": "Admin > Elevated > Standard > Limited",

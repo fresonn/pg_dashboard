@@ -80,6 +80,9 @@ type RequestValidationError struct {
 // RoleAccessLevel Admin > Elevated > Standard > Limited
 type RoleAccessLevel = clusterEntities.RoleAccessLevel
 
+// RoleAttributes https://www.postgresql.org/docs/current/role-attributes.html#ROLE-ATTRIBUTES
+type RoleAttributes = clusterEntities.RoleAttribute
+
 // RoleView defines model for RoleView.
 type RoleView = entities.RoleView
 

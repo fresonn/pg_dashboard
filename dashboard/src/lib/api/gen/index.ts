@@ -26,6 +26,8 @@ export type {
   GetPostgresPostmasterSettings,
   RoleAccessLevelEnumKey,
   RoleAccessLevel,
+  RoleAttributesEnumKey,
+  RoleAttributes,
   RoleView,
   GetStatus200,
   GetStatus400,
@@ -120,5 +122,6 @@ export { rolesSuspenseQueryOptions } from './hooks/useRolesSuspense.ts'
 export { useRolesSuspense } from './hooks/useRolesSuspense.ts'
 export { connectionStatus } from './models.ts'
 export { roleAccessLevelEnum } from './models.ts'
+export { roleAttributesEnum } from './models.ts'
 export { databasesDetailedQueryParamsSortEnum } from './models.ts'
 export { databasesDetailedQueryParamsOrderEnum } from './models.ts'

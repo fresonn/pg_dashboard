@@ -1,0 +1,11 @@
+{
+  "type": "string",
+  "description": "https://www.postgresql.org/docs/current/role-attributes.html#ROLE-ATTRIBUTES",
+  "enum": ["superuser", "login", "createRole", "createDatabase", "replication"],
+  "x-go-type": "clusterEntities.RoleAttribute",
+  "x-go-type-import": {
+    "path": "dashboard/api/internal/scopes/cluster/entities",
+    "name": "clusterEntities"
+  },
+  "x-readme-ref-name": "RoleAttributes"
+}

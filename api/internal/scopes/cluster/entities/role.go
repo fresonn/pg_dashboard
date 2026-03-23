@@ -11,14 +11,15 @@ const (
 	RoleAccessLevelLimited  RoleAccessLevel = "limited"
 )
 
-type RoleFlag string
+type RoleAttribute string
 
+// info: relies on https://www.postgresql.org/docs/current/role-attributes.html#ROLE-ATTRIBUTES
 const (
-	RoleFlagSuperuser   RoleFlag = "superuser"
-	RoleFlagLogin       RoleFlag = "login"
-	RoleFlagCreateRole  RoleFlag = "create_role"
-	RoleFlagCreateDB    RoleFlag = "create_db"
-	RoleFlagReplication RoleFlag = "replication"
+	RoleAttributeSuperuser   RoleAttribute = "superuser"
+	RoleAttributeLogin       RoleAttribute = "login"
+	RoleAttributeCreateRole  RoleAttribute = "createRole"
+	RoleAttributeCreateDB    RoleAttribute = "createDatabase"
+	RoleAttributeReplication RoleAttribute = "replication"
 )
 
 type Role struct {
@@ -42,7 +43,7 @@ type RoleView struct {
 	Name        string           `json:"name"`
 	IsGroupRole bool             `json:"isGroup"`
 	Membership  []RoleMembership `json:"membership"`
-	Flags       []RoleFlag       `json:"flags"`
+	Attributes  []RoleAttribute  `json:"attributes"`
 	AccessLevel RoleAccessLevel  `json:"accessLevel"`
 }
 

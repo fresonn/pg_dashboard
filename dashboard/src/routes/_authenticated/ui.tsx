@@ -4,7 +4,8 @@ import { Button } from '@/components/ui/button'
 import { AlarmClockCheck, Database } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Header } from '@/components/layout/header/header'
-import { RoleFlag } from '@/views/overview/roles/ui/flag'
+import { RoleAttributeFlag } from '@/views/overview/roles/ui/attribute-flag'
+import { roleAttributesEnum } from '@/lib/api/gen'
 
 export const Route = createFileRoute('/_authenticated/ui')({
   component: RouteComponent
@@ -57,9 +58,9 @@ function RouteComponent() {
       </div>
 
       <div className="mb-10">
-        <h1>Role flags</h1>
-        {Object.values(roleFlag).map((flag) => (
-          <RoleFlag key={flag} flag={flag} />
+        <h1>Role attrs</h1>
+        {Object.values(roleAttributesEnum).map((attr) => (
+          <RoleAttributeFlag key={attr} attribute={attr} />
         ))}
       </div>
 
