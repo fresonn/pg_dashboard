@@ -1,1 +1,1 @@
-# Simple PostgreSQL Dashboard
+# PostgreSQL Dashboard
