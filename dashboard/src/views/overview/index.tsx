@@ -6,7 +6,7 @@ import type { ReactNode } from 'react'
 import { UptimeWidget, UptimeWidgetSkeleton } from './widgets/uptime'
 import { ClusterSettings, ClusterSettingsSkeleton } from './widgets/cluster-settings'
 import { AvailableDatabases } from './databases'
-import { RolesWidget } from './roles'
+import { RolesWidget, RolesWidgetSkeleton } from './roles'
 
 export function DashboardGrid({ children }: { children: ReactNode }) {
   return (
@@ -49,7 +49,7 @@ export function ClusterOverview() {
             <Widget
               title="Roles & Permissions"
               className="col-span-6 row-span-8"
-              skeleton={<div>skeleton</div>}
+              skeleton={<RolesWidgetSkeleton />}
             >
               <RolesWidget />
             </Widget>

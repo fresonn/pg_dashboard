@@ -2,13 +2,6 @@ import { Button } from '@/components/ui/button'
 import { ChevronRightIcon } from 'lucide-react'
 import type { Table } from '@tanstack/react-table'
 
-export type PageInfo = {
-  hasNextPage: boolean
-  startCursor?: string | null
-  endCursor?: string | null
-  hasPreviousPage: boolean
-}
-
 export interface DataTablePaginationProps<TData> {
   table: Table<TData>
 }

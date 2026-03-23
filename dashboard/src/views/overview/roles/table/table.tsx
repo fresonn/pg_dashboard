@@ -19,11 +19,7 @@ import {
   TableRow
 } from '@/components/ui/shadcn/table'
 
-export type RolesTableProps = {
-  data: Role[]
-}
-
-export function RolesTable({ data }: RolesTableProps) {
+export function RolesTable({ data }: { data: Role[] }) {
   const isFetching = false
 
   const [pagination, setPagination] = useState({

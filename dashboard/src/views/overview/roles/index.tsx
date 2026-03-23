@@ -2,7 +2,9 @@ import ContentLoader from 'react-content-loader'
 import { useRolesSuspense } from '@/lib/api/gen'
 import { RolesTable } from './table/table'
 
-export function UptimeWidgetSkeleton() {
+export function RolesWidgetSkeleton() {
+  const axisY = [11, 44, 77, 110]
+
   return (
     <ContentLoader
       className="h-full"
@@ -10,7 +12,18 @@ export function UptimeWidgetSkeleton() {
       foregroundColor="var(--skeleton-fg)"
       width="100%"
     >
-      <rect x="0" y="0" width="100%" rx="6" ry="6" height="16" />
+      {axisY.map((y) => {
+        return Array.from({ length: 4 }).map((_, ind) => (
+          <rect
+            key={`header-${ind}`}
+            x={`calc(${ind * 25}% + 0.8%)`}
+            y={y}
+            rx={6}
+            width="calc(25% - 1.6%)"
+            height={23}
+          />
+        ))
+      })}
     </ContentLoader>
   )
 }
@@ -22,9 +35,5 @@ export function RolesWidget() {
     }
   })
 
-  return (
-    <div>
-      <RolesTable data={data} />
-    </div>
-  )
+  return <RolesTable data={data} />
 }
