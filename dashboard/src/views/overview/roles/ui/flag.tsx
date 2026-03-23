@@ -40,7 +40,7 @@ export function RoleFlag({ flag, iconSize = 22 }: { flag: string; iconSize?: num
           <Icon className={color} size={iconSize} />
         </TooltipTrigger>
         <TooltipContent side="bottom">
-          <Typography className="font-medium">{label}</Typography>
+          <Typography>{label}</Typography>
         </TooltipContent>
       </Tooltip>
     </div>

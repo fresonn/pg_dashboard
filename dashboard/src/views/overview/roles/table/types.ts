@@ -1,10 +1,11 @@
-import type { RoleAccessLevel } from '@/lib/api/gen'
+import type { RoleAccessLevel, RoleView } from '@/lib/api/gen'
 
 export type Role = {
   id: string
   name: string
+  isGroup: boolean
   accessLevel: RoleAccessLevel
-  memberOf: string[]
+  membership: RoleView['membership']
   flags: string[]
   capabilities: string[]
 }

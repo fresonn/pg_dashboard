@@ -235,6 +235,9 @@ export const roleAccessLevelEnum = {
 
 export type RoleAccessLevelEnumKey = (typeof roleAccessLevelEnum)[keyof typeof roleAccessLevelEnum]
 
+/**
+ * @description Admin > Elevated > Standard > Limited
+ */
 export type RoleAccessLevel = RoleAccessLevelEnumKey
 
 export type RoleView = {
@@ -247,21 +250,31 @@ export type RoleView = {
    */
   name: string
   /**
+   * @type boolean
+   */
+  isGroup: boolean
+  /**
    * @type array
    */
-  memberOf: string[]
+  membership: {
+    /**
+     * @type string
+     */
+    name: string
+    /**
+     * @type string
+     */
+    description: string
+  }[]
   /**
    * @type array
    */
   flags: string[]
   /**
+   * @description Admin > Elevated > Standard > Limited
    * @type string
    */
   accessLevel: RoleAccessLevel
-  /**
-   * @type array
-   */
-  capabilities: string[]
 }
 
 /**

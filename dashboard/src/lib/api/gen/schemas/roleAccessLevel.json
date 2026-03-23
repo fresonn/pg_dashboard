@@ -1,5 +1,6 @@
 {
   "type": "string",
+  "description": "Admin > Elevated > Standard > Limited",
   "enum": ["admin", "elevated", "standard", "limited"],
   "x-go-type": "clusterEntities.RoleAccessLevel",
   "x-go-type-import": {

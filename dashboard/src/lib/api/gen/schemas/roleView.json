@@ -1,6 +1,6 @@
 {
   "type": "object",
-  "required": ["id", "name", "accessLevel", "memberOf", "flags", "capabilities"],
+  "required": ["id", "name", "isGroup", "accessLevel", "membership", "flags"],
   "x-go-type": "entities.RoleView",
   "x-go-type-import": {
     "path": "dashboard/api/internal/scopes/cluster/entities",
@@ -9,10 +9,19 @@
   "properties": {
     "id": { "type": "string" },
     "name": { "type": "string" },
-    "memberOf": { "type": "array", "items": { "type": "string" } },
+    "isGroup": { "type": "boolean" },
+    "membership": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "description"],
+        "properties": { "name": { "type": "string" }, "description": { "type": "string" } }
+      }
+    },
     "flags": { "type": "array", "items": { "nullable": true, "type": "string" } },
     "accessLevel": {
       "type": "string",
+      "description": "Admin > Elevated > Standard > Limited",
       "enum": ["admin", "elevated", "standard", "limited"],
       "x-go-type": "clusterEntities.RoleAccessLevel",
       "x-go-type-import": {
@@ -20,8 +29,7 @@
         "name": "clusterEntities"
       },
       "x-readme-ref-name": "RoleAccessLevel"
-    },
-    "capabilities": { "type": "array", "items": { "type": "string" } }
+    }
   },
   "x-readme-ref-name": "RoleView"
 }
