@@ -1,5 +1,7 @@
 import { useState } from 'react'
-
+import { columns } from './columns'
+import type { Role } from './types'
+import { TablePagination } from './pagination'
 import {
   getCoreRowModel,
   useReactTable,
@@ -8,7 +10,6 @@ import {
   getFacetedMinMaxValues,
   getPaginationRowModel
 } from '@tanstack/react-table'
-
 import {
   Table,
   TableBody,
@@ -18,11 +19,6 @@ import {
   TableRow
 } from '@/components/ui/shadcn/table'
 
-import type { Role } from './types'
-import { columns } from './columns'
-import { Typography } from '@/components/ui/typography'
-import { TablePagination } from './pagination'
-
 export type RolesTableProps = {
   data: Role[]
 }
@@ -31,8 +27,8 @@ export function RolesTable({ data }: RolesTableProps) {
   const isFetching = false
 
   const [pagination, setPagination] = useState({
-    pageIndex: 0, //initial page index
-    pageSize: 3 //default page size
+    pageIndex: 0,
+    pageSize: 3
   })
 
   const table = useReactTable({
@@ -51,8 +47,8 @@ export function RolesTable({ data }: RolesTableProps) {
   return (
     <div>
       <div className="relative">
-        <Table wrapperClassName="">
-          <TableHeader className="bg-neutral-900">
+        <Table>
+          <TableHeader className="pointer-events-none bg-neutral-900">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
@@ -69,34 +65,19 @@ export function RolesTable({ data }: RolesTableProps) {
             ))}
           </TableHeader>
           <TableBody loading={isFetching}>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && 'selected'}
-                  className="cursor-pointer"
-                  //   onClick={() => {
-                  //     if (row.getValue('allowConnections')) {
-                  //       handleDatabaseClick(row.getValue('name'))
-                  //     }
-                  //   }}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow className="absolute inset-0 flex items-center justify-center hover:bg-transparent">
-                <TableCell>
-                  <Typography variant="h3" className="text-foreground/70">
-                    No databases found
-                  </Typography>
-                </TableCell>
+            {table.getRowModel().rows.map((row) => (
+              <TableRow
+                key={row.id}
+                data-state={row.getIsSelected() && 'selected'}
+                className="cursor-pointer"
+              >
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                ))}
               </TableRow>
-            )}
+            ))}
           </TableBody>
         </Table>
         <div className="absolute -top-10 right-0">

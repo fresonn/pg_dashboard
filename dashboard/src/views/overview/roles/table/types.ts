@@ -7,5 +7,4 @@ export type Role = {
   accessLevel: RoleAccessLevel
   membership: RoleView['membership']
   flags: string[]
-  capabilities: string[]
 }

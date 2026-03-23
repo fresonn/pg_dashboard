@@ -1,7 +1,7 @@
 import type { Role } from './types'
 import { RoleFlag } from '../ui/flag'
 import { createColumnHelper } from '@tanstack/react-table'
-import { MembershipList } from './membership-list'
+import { MembershipList } from '../ui/membership-list'
 import { Badge } from '@/components/ui/shadcn/badge'
 import { capitalize } from '@/lib/utils'
 

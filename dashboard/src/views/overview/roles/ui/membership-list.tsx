@@ -1,4 +1,3 @@
-import type { Role } from './types'
 import { Ellipsis, UserRoundX } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Typography } from '@/components/ui/typography'
@@ -9,8 +8,8 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/shadcn/dropdown-menu'
 
-export type MembershipListProps = {
-  membership: Role['membership'] | null
+export interface MembershipListProps {
+  membership: Array<{ name: string; description: string }>
 }
 
 export function MembershipList({ membership }: MembershipListProps) {
