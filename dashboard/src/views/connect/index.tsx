@@ -76,13 +76,13 @@ export function ConnectView() {
           <div className="mb-10 pt-10">
             <ul>
               <li className="mb-5">
-                <Label htmlFor="conncet-database-input">Database (optional)</Label>
+                <Label htmlFor="connect-database-input">Database (optional)</Label>
                 <InputGroup>
                   <InputGroupAddon>
                     <Database />
                   </InputGroupAddon>
                   <InputGroupInput
-                    id="conncet-database-input"
+                    id="connect-database-input"
                     placeholder="postgres"
                     className="pl-2!"
                     autoComplete="off"
@@ -137,11 +137,11 @@ export function ConnectView() {
                     control={control}
                     render={({ field, fieldState }) => (
                       <>
-                        <Label htmlFor="conncet-port-input">Port</Label>
+                        <Label htmlFor="connect-port-input">Port</Label>
                         <InputGroup className="mb-1">
                           <InputGroupInput
                             {...field}
-                            id="conncet-port-input"
+                            id="connect-port-input"
                             type="number"
                             placeholder="5432"
                             autoComplete="off"
@@ -165,10 +165,10 @@ export function ConnectView() {
                   control={control}
                   render={({ field, fieldState }) => (
                     <>
-                      <Label htmlFor="conncet-user-input">User</Label>
+                      <Label htmlFor="connect-user-input">User</Label>
                       <InputGroup className="mb-1">
                         <InputGroupInput
-                          id="conncet-user-input"
+                          id="connect-user-input"
                           placeholder="postgres"
                           autoComplete="off"
                           aria-invalid={fieldState.invalid}

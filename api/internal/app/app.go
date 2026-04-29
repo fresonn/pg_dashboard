@@ -39,7 +39,7 @@ func New(cfg config.AppConfig, logger *slog.Logger) *App {
 
 	clusterCache := clusterCache.New(&cfg, logger)
 
-	cluserScope := cluster.New(cluster.Options{
+	clusterScope := cluster.New(cluster.Options{
 		Config:          cfg,
 		Logger:          logger,
 		PostgresManager: pgManager,
@@ -55,7 +55,7 @@ func New(cfg config.AppConfig, logger *slog.Logger) *App {
 		AllowCredentials: true,
 	}))
 
-	restHandler := rest.New(cluserScope)
+	restHandler := rest.New(clusterScope)
 
 	strictHandler := openapi.NewStrictHandler(restHandler, nil)
 

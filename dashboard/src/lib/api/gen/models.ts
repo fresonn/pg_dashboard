@@ -348,7 +348,7 @@ export type ClusterConnectMutation = {
 export type ClusterDisconnect200 = GetStatusResponse
 
 /**
- * @description Disonnection attempt failed
+ * @description Disconnection attempt failed
  */
 export type ClusterDisconnect400 = ErrorBase
 

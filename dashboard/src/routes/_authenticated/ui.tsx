@@ -22,7 +22,7 @@ export const roleFlag = {
 function RouteComponent() {
   const [loading, setLoading] = useState(false)
 
-  const hanleClick = () => {
+  const handleClick = () => {
     setLoading((prev) => !prev)
   }
 
@@ -38,11 +38,11 @@ function RouteComponent() {
       <Button variant="link">Click me!</Button>
       <Button variant="light">Light</Button>
       <div className="my-10">
-        <Button loading={loading} onClick={hanleClick}>
+        <Button loading={loading} onClick={handleClick}>
           <Database />
           Loading
         </Button>
-        <Button loading={loading} onClick={hanleClick} variant="secondary">
+        <Button loading={loading} onClick={handleClick} variant="secondary">
           <AlarmClockCheck />
           Loading
         </Button>
