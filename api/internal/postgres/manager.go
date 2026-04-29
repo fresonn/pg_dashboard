@@ -111,9 +111,10 @@ func (m *Manager) UpdateConnection(ctx context.Context, newConn config.Connectio
 		return err
 	}
 
-	db.SetMaxOpenConns(20)
+	db.SetMaxOpenConns(15)
 	db.SetMaxIdleConns(5)
 	db.SetConnMaxLifetime(time.Hour)
+	db.SetConnMaxIdleTime(30 * time.Minute)
 
 	m.mu.Lock()
 
