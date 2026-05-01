@@ -35,7 +35,7 @@ var postmasterParams = []string{
 // https://www.postgresql.org/docs/current/view-pg-settings.html
 func (s *Service) PostmasterSettings(ctx context.Context) (cluster.PostmasterSettings, error) {
 
-	settings, err := s.storage.PostmasterSettings(ctx, postmasterParams)
+	settings, err := s.pg.PostmasterSettings(ctx, postmasterParams)
 	if err != nil {
 		s.logger.ErrorContext(ctx, "get cluster settings", "error", err)
 		return cluster.PostmasterSettings{}, err

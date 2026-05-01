@@ -1,4 +1,4 @@
-package storage
+package postgres
 
 import (
 	"dashboard/api/internal/model/cluster"

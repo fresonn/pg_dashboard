@@ -5,6 +5,6 @@ import (
 	"dashboard/api/internal/model/role"
 )
 
-type Storage interface {
+type PostgresRepo interface {
 	Roles(ctx context.Context) ([]role.Role, error)
 }

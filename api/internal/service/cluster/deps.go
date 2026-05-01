@@ -5,7 +5,7 @@ import (
 	"dashboard/api/internal/model/cluster"
 )
 
-type Storage interface {
+type PostgresRepo interface {
 	Version() (string, error)
 	Uptime() (cluster.PostgresUptime, error)
 	PostmasterSettings(ctx context.Context, params []string) ([]cluster.Setting, error)

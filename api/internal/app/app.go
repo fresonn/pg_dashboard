@@ -9,11 +9,11 @@ import (
 	"dashboard/api/internal/infra/postgres"
 	"dashboard/api/internal/service/cluster"
 	clusterCache "dashboard/api/internal/service/cluster/repo/cache"
-	clusterRepo "dashboard/api/internal/service/cluster/repo/storage"
+	clusterPostgresRepo "dashboard/api/internal/service/cluster/repo/postgres"
 	"dashboard/api/internal/service/database"
-	databaseRepo "dashboard/api/internal/service/database/repo/storage"
+	databasePostgresRepo "dashboard/api/internal/service/database/repo/postgres"
 	"dashboard/api/internal/service/roles"
-	rolesRepo "dashboard/api/internal/service/roles/repo/storage"
+	rolesPostgresRepo "dashboard/api/internal/service/roles/repo/postgres"
 	httpTransport "dashboard/api/internal/transport/http"
 	"errors"
 	"fmt"
@@ -42,35 +42,35 @@ func New(cfg config.AppConfig) *App {
 	pgManager := postgres.New(cfg, slogLogger)
 
 	clusterLogger := logger.WithScopeLogger(slogLogger, "cluster")
-	clusterStorage := clusterRepo.New(cfg, clusterLogger, pgManager)
+	clusterPostgres := clusterPostgresRepo.New(cfg, clusterLogger, pgManager)
 	clusterCache := clusterCache.New(cfg, clusterLogger)
 
 	clusterService := cluster.New(cluster.Options{
 		Config:          cfg,
 		PostgresManager: pgManager,
 		Logger:          clusterLogger,
-		Storage:         clusterStorage,
+		PostgresRepo:    clusterPostgres,
 		Cache:           clusterCache,
 	})
 
 	rolesLogger := logger.WithScopeLogger(slogLogger, "role")
-	rolesStorage := rolesRepo.New(cfg, rolesLogger, pgManager)
+	rolesPostgres := rolesPostgresRepo.New(cfg, rolesLogger, pgManager)
 
 	rolesService := roles.New(roles.Options{
 		Config:          cfg,
 		Logger:          rolesLogger,
 		PostgresManager: pgManager,
-		Storage:         rolesStorage,
+		PostgresRepo:    rolesPostgres,
 	})
 
 	databaseLogger := logger.WithScopeLogger(slogLogger, "database")
-	databaseStorage := databaseRepo.New(cfg, databaseLogger, pgManager)
+	databasePostgres := databasePostgresRepo.New(cfg, databaseLogger, pgManager)
 
 	databaseService := database.New(database.Options{
 		Config:          cfg,
 		Logger:          databaseLogger,
 		PostgresManager: pgManager,
-		Storage:         databaseStorage,
+		PostgresRepo:    databasePostgres,
 	})
 
 	r := chi.NewRouter()

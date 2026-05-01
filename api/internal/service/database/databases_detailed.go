@@ -7,7 +7,7 @@ import (
 
 func (s *Service) DatabasesDetailed(ctx context.Context, filter database.DatabasesFilter) ([]database.DatabaseDetails, error) {
 
-	databases, err := s.storage.DatabasesDetails(ctx, filter)
+	databases, err := s.pg.DatabasesDetails(ctx, filter)
 	if err != nil {
 		s.logger.ErrorContext(ctx, "available databases", "error", err)
 		return nil, err

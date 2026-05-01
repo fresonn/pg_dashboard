@@ -14,7 +14,7 @@ func (s *Service) Uptime(ctx context.Context) (cluster.PostgresUptime, error) {
 		return uptime, nil
 	}
 
-	uptime, err := s.storage.Uptime()
+	uptime, err := s.pg.Uptime()
 	if err != nil {
 		s.logger.ErrorContext(ctx, "get cluster uptime", "error", err)
 		return cluster.PostgresUptime{}, err

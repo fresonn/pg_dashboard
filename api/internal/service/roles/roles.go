@@ -10,7 +10,7 @@ import (
 
 func (s *Service) Roles(ctx context.Context) ([]roleModels.RoleView, error) {
 
-	roles, err := s.storage.Roles(ctx)
+	roles, err := s.pg.Roles(ctx)
 	if err != nil {
 		s.logger.ErrorContext(ctx, "get roles", "error", err)
 		return nil, errors.New("failed to get cluster roles")

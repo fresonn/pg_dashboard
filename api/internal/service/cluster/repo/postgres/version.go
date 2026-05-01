@@ -1,4 +1,4 @@
-package storage
+package postgres
 
 const PG_VERSION_QUERY = "SELECT version()"
 

@@ -16,7 +16,7 @@ func (s *Service) Version(ctx context.Context) (cluster.PostgresVersion, error) 
 		return pgVersion, nil
 	}
 
-	rawVersion, err := s.storage.Version()
+	rawVersion, err := s.pg.Version()
 	if err != nil {
 		s.logger.ErrorContext(ctx, "get postgres version", "error", err)
 		return cluster.PostgresVersion{}, err

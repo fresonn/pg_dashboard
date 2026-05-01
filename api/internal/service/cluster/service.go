@@ -13,7 +13,7 @@ type Service struct {
 	logger    logger.Logger
 	pgManager *postgres.Manager
 	validate  *validator.Validate
-	storage   Storage
+	pg        PostgresRepo
 	cache     Cache
 }
 
@@ -21,7 +21,7 @@ type Options struct {
 	Config          config.AppConfig
 	Logger          logger.Logger
 	PostgresManager *postgres.Manager
-	Storage         Storage
+	PostgresRepo    PostgresRepo
 	Cache           Cache
 }
 
@@ -31,7 +31,7 @@ func New(options Options) *Service {
 		config:    options.Config,
 		logger:    options.Logger,
 		validate:  validator.New(validator.WithRequiredStructEnabled()),
-		storage:   options.Storage,
+		pg:        options.PostgresRepo,
 		pgManager: options.PostgresManager,
 		cache:     options.Cache,
 	}
