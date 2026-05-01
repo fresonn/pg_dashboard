@@ -2,10 +2,10 @@ package cluster
 
 import (
 	"context"
+	"dashboard/api/internal/helper"
 	"dashboard/api/internal/infra/logger"
 	"dashboard/api/internal/model/cluster"
 
-	"dashboard/api/internal/utils"
 	"fmt"
 )
 
@@ -76,13 +76,13 @@ func parseSizeSetting(ctx context.Context, logger logger.Logger, store map[strin
 	}
 
 	if setting.Unit == "8kB" || setting.Unit == "8KB" {
-		n, err := utils.ParseInt64(setting.Value)
+		n, err := helper.ParseInt64(setting.Value)
 		if err != nil {
 			logger.WarnContext(ctx, fmt.Sprintf("failed to parse %s", key), "value", setting.Value)
 			return cluster.Setting{}, false
 		}
 
-		setting.Value = utils.PrettyByteSize((8 * utils.KB) * n)
+		setting.Value = helper.PrettyByteSize((8 * helper.KB) * n)
 	}
 
 	return setting, true

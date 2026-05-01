@@ -1,9 +1,9 @@
 package storage
 
 import (
+	"dashboard/api/internal/helper"
 	"dashboard/api/internal/infra/postgres"
 	"dashboard/api/internal/model/database"
-	"dashboard/api/internal/utils"
 )
 
 type DatabaseDetails struct {
@@ -24,7 +24,7 @@ type DatabaseDetails struct {
 
 func toDatabaseDetailsEntity(dto DatabaseDetails) database.DatabaseDetails {
 	return database.DatabaseDetails{
-		ID:               utils.IntToString(dto.OID),
+		ID:               helper.IntToString(dto.OID),
 		Name:             dto.Name,
 		Owner:            dto.Owner.String(),
 		Encoding:         dto.Encoding.String(),

@@ -2,9 +2,8 @@ package storage
 
 import (
 	"context"
+	"dashboard/api/internal/helper"
 	"dashboard/api/internal/model/database"
-
-	"dashboard/api/internal/utils"
 	"fmt"
 )
 
@@ -64,7 +63,7 @@ func (s *Storage) DatabasesDetails(ctx context.Context, filter database.Database
 
 	for _, d := range dtos {
 		entity := toDatabaseDetailsEntity(d)
-		entity.SizePretty = utils.PrettyByteSize(d.SizeBytes)
+		entity.SizePretty = helper.PrettyByteSize(d.SizeBytes)
 
 		databases = append(databases, entity)
 	}

@@ -4,6 +4,7 @@ import (
 	"context"
 	"dashboard/api/gen/openapi"
 	"dashboard/api/internal/config"
+	"dashboard/api/internal/helper"
 	"dashboard/api/internal/infra/logger"
 	"dashboard/api/internal/infra/postgres"
 	"dashboard/api/internal/service/cluster"
@@ -14,7 +15,6 @@ import (
 	"dashboard/api/internal/service/roles"
 	rolesRepo "dashboard/api/internal/service/roles/repo/storage"
 	httpTransport "dashboard/api/internal/transport/http"
-	"dashboard/api/internal/utils"
 	"errors"
 	"fmt"
 	"net"
@@ -99,7 +99,7 @@ func (a *App) Run() {
 	ctx, cancel := context.WithCancel(context.Background())
 
 	server := &http.Server{
-		Addr:    ":" + utils.IntToString(a.config.Env.Port),
+		Addr:    ":" + helper.IntToString(a.config.Env.Port),
 		Handler: a.router,
 		BaseContext: func(net.Listener) context.Context {
 			return ctx

@@ -2,8 +2,8 @@ package roles
 
 import (
 	"context"
+	"dashboard/api/internal/helper"
 	roleModels "dashboard/api/internal/model/role"
-	"dashboard/api/internal/utils"
 
 	"errors"
 )
@@ -47,7 +47,7 @@ func buildMembership(role roleModels.Role) []roleModels.RoleMembership {
 
 func computeRoleView(role roleModels.Role) roleModels.RoleView {
 	rv := roleModels.RoleView{
-		ID:          utils.IntToString(role.ID),
+		ID:          helper.IntToString(role.ID),
 		Name:        role.Name,
 		Membership:  buildMembership(role),
 		IsGroupRole: !role.CanLogin,
