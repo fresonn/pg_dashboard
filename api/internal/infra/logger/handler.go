@@ -2,7 +2,7 @@ package logger
 
 import (
 	"context"
-	"dashboard/api/pkg/ctxkeys"
+	"dashboard/api/internal/ctxkeys"
 	"log/slog"
 )
 

@@ -1,7 +1,7 @@
 package app
 
 import (
-	"dashboard/api/pkg/ctxkeys"
+	"dashboard/api/internal/ctxkeys"
 	"net/http"
 
 	"github.com/google/uuid"
