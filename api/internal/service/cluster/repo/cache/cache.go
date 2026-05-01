@@ -3,10 +3,9 @@ package cache
 import (
 	"context"
 	"dashboard/api/internal/config"
+	"dashboard/api/internal/infra/inmemory"
 	"dashboard/api/internal/infra/logger"
 	"dashboard/api/internal/model/cluster"
-
-	"dashboard/api/pkg/inmemory"
 	"time"
 
 	"github.com/jellydator/ttlcache/v3"
