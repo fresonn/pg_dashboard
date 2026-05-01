@@ -4,6 +4,7 @@ import (
 	"context"
 	"dashboard/api/gen/openapi"
 	"dashboard/api/internal/config"
+	"dashboard/api/internal/infra/logger"
 	"dashboard/api/internal/infra/postgres"
 	"dashboard/api/internal/service/cluster"
 	clusterCache "dashboard/api/internal/service/cluster/repo/cache"
@@ -16,7 +17,6 @@ import (
 	"dashboard/api/internal/utils"
 	"errors"
 	"fmt"
-	"log/slog"
 	"net"
 	"net/http"
 	"os"
@@ -32,38 +32,43 @@ import (
 type App struct {
 	config config.AppConfig
 	router http.Handler
-	log    *slog.Logger
+	log    logger.Logger
 }
 
-func New(cfg config.AppConfig, logger *slog.Logger) *App {
+func New(cfg config.AppConfig) *App {
 
-	pgManager := postgres.New(cfg, logger)
+	slogLogger := logger.New(cfg)
 
-	clusterStorage := clusterRepo.New(cfg, logger, pgManager)
-	clusterCache := clusterCache.New(&cfg, logger)
+	pgManager := postgres.New(cfg, slogLogger)
+
+	clusterLogger := logger.WithScopeLogger(slogLogger, "cluster")
+	clusterStorage := clusterRepo.New(cfg, clusterLogger, pgManager)
+	clusterCache := clusterCache.New(cfg, clusterLogger)
 
 	clusterService := cluster.New(cluster.Options{
 		Config:          cfg,
-		Logger:          logger,
 		PostgresManager: pgManager,
+		Logger:          clusterLogger,
 		Storage:         clusterStorage,
 		Cache:           clusterCache,
 	})
 
-	rolesStorage := rolesRepo.New(cfg, logger, pgManager)
+	rolesLogger := logger.WithScopeLogger(slogLogger, "role")
+	rolesStorage := rolesRepo.New(cfg, rolesLogger, pgManager)
 
 	rolesService := roles.New(roles.Options{
 		Config:          cfg,
-		Logger:          logger,
+		Logger:          rolesLogger,
 		PostgresManager: pgManager,
 		Storage:         rolesStorage,
 	})
 
-	databaseStorage := databaseRepo.New(cfg, logger, pgManager)
+	databaseLogger := logger.WithScopeLogger(slogLogger, "database")
+	databaseStorage := databaseRepo.New(cfg, databaseLogger, pgManager)
 
 	databaseService := database.New(database.Options{
 		Config:          cfg,
-		Logger:          logger,
+		Logger:          databaseLogger,
 		PostgresManager: pgManager,
 		Storage:         databaseStorage,
 	})
@@ -84,7 +89,7 @@ func New(cfg config.AppConfig, logger *slog.Logger) *App {
 
 	return &App{
 		config: cfg,
-		log:    logger,
+		log:    slogLogger,
 		router: handler,
 	}
 }

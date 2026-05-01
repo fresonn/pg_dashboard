@@ -3,21 +3,21 @@ package cache
 import (
 	"context"
 	"dashboard/api/internal/config"
+	"dashboard/api/internal/infra/logger"
 	"dashboard/api/internal/model/cluster"
 
 	"dashboard/api/pkg/inmemory"
-	"log/slog"
 	"time"
 
 	"github.com/jellydator/ttlcache/v3"
 )
 
 type Cache struct {
-	logger *slog.Logger
+	logger logger.Logger
 	cache  *inmemory.Store[any]
 }
 
-func New(config *config.AppConfig, logger *slog.Logger) *Cache {
+func New(config config.AppConfig, logger logger.Logger) *Cache {
 
 	cache := inmemory.New[any](5 * time.Minute)
 

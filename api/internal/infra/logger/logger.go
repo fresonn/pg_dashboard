@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"context"
 	"dashboard/api/internal/config"
 	"io"
 	"log/slog"
@@ -9,6 +10,18 @@ import (
 
 	"github.com/lmittmann/tint"
 )
+
+type Logger interface {
+	Info(msg string, args ...any)
+	Error(msg string, args ...any)
+	Debug(msg string, args ...any)
+	Warn(msg string, args ...any)
+
+	InfoContext(ctx context.Context, msg string, args ...any)
+	ErrorContext(ctx context.Context, msg string, args ...any)
+	DebugContext(ctx context.Context, msg string, args ...any)
+	WarnContext(ctx context.Context, msg string, args ...any)
+}
 
 func New(appCfg config.AppConfig) *slog.Logger {
 
@@ -68,4 +81,9 @@ func New(appCfg config.AppConfig) *slog.Logger {
 	slog.SetDefault(log)
 
 	return log
+}
+
+func WithScopeLogger(logger *slog.Logger, scope string) Logger {
+
+	return logger.With("scope_name", scope)
 }

@@ -2,17 +2,17 @@ package storage
 
 import (
 	"dashboard/api/internal/config"
+	"dashboard/api/internal/infra/logger"
 	"dashboard/api/internal/infra/postgres"
-	"log/slog"
 )
 
 type Storage struct {
 	config    config.AppConfig
-	logger    *slog.Logger
+	logger    logger.Logger
 	pgManager *postgres.Manager
 }
 
-func New(config config.AppConfig, logger *slog.Logger, pgManager *postgres.Manager) *Storage {
+func New(config config.AppConfig, logger logger.Logger, pgManager *postgres.Manager) *Storage {
 
 	return &Storage{
 		config:    config,

@@ -3,7 +3,6 @@ package main
 import (
 	"dashboard/api/internal/app"
 	"dashboard/api/internal/config"
-	"dashboard/api/pkg/logger"
 	"flag"
 	"fmt"
 	"log"
@@ -31,9 +30,8 @@ func init() {
 
 func main() {
 	cfg := config.New()
-	lgr := logger.New(cfg)
 
-	application := app.New(cfg, lgr)
+	application := app.New(cfg)
 
 	application.Run()
 }

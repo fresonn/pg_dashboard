@@ -3,8 +3,8 @@ package postgres
 import (
 	"context"
 	"dashboard/api/internal/config"
+	"dashboard/api/internal/infra/logger"
 	"fmt"
-	"log/slog"
 	"sync"
 	"time"
 
@@ -23,7 +23,7 @@ const (
 
 type Manager struct {
 	config   config.AppConfig
-	logger   *slog.Logger
+	logger   logger.Logger
 	mu       sync.RWMutex
 	sqlxDB   *sqlx.DB
 	retries  int
@@ -31,7 +31,7 @@ type Manager struct {
 	status   ConnectionStatus
 }
 
-func New(config config.AppConfig, logger *slog.Logger) *Manager {
+func New(config config.AppConfig, logger logger.Logger) *Manager {
 
 	m := &Manager{
 		config:   config,

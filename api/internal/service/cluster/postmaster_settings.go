@@ -2,11 +2,11 @@ package cluster
 
 import (
 	"context"
+	"dashboard/api/internal/infra/logger"
 	"dashboard/api/internal/model/cluster"
 
 	"dashboard/api/internal/utils"
 	"fmt"
-	"log/slog"
 )
 
 const (
@@ -69,7 +69,7 @@ func (s *Service) PostmasterSettings(ctx context.Context) (cluster.PostmasterSet
 	}, nil
 }
 
-func parseSizeSetting(ctx context.Context, logger *slog.Logger, store map[string]cluster.Setting, key string) (cluster.Setting, bool) {
+func parseSizeSetting(ctx context.Context, logger logger.Logger, store map[string]cluster.Setting, key string) (cluster.Setting, bool) {
 	setting, ok := store[key]
 	if !ok {
 		return cluster.Setting{}, false
