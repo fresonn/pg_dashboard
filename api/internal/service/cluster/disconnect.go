@@ -5,7 +5,7 @@ import (
 	"errors"
 )
 
-func (s *service) Disconnect(ctx context.Context) error {
+func (s *Service) Disconnect(ctx context.Context) error {
 
 	s.logger.Info("try to disconnect postgres")
 

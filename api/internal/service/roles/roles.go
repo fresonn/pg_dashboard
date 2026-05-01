@@ -8,7 +8,7 @@ import (
 	"errors"
 )
 
-func (s *service) Roles(ctx context.Context) ([]roleModels.RoleView, error) {
+func (s *Service) Roles(ctx context.Context) ([]roleModels.RoleView, error) {
 
 	roles, err := s.storage.Roles(ctx)
 	if err != nil {

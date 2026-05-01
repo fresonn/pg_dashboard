@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func (s *service) Version(ctx context.Context) (cluster.PostgresVersion, error) {
+func (s *Service) Version(ctx context.Context) (cluster.PostgresVersion, error) {
 
 	s.logger.DebugContext(ctx, "try to get postgres version")
 

@@ -1,9 +1,7 @@
 package cluster
 
 import (
-	"context"
 	"dashboard/api/internal/config"
-	"dashboard/api/internal/model/cluster"
 	"dashboard/api/internal/postgres"
 	"dashboard/api/pkg/logger"
 	"log/slog"
@@ -11,16 +9,7 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-type Service interface {
-	Connect(ctx context.Context, authData cluster.AuthData) (cluster.Status, error)
-	PostgresStatus(ctx context.Context) cluster.Status
-	Uptime(ctx context.Context) (cluster.PostgresUptime, error)
-	Version(ctx context.Context) (cluster.PostgresVersion, error)
-	PostmasterSettings(ctx context.Context) (cluster.PostmasterSettings, error)
-	Disconnect(ctx context.Context) error
-}
-
-type service struct {
+type Service struct {
 	config    config.AppConfig
 	logger    *slog.Logger
 	pgManager *postgres.Manager
@@ -37,9 +26,9 @@ type Options struct {
 	Cache           Cache
 }
 
-func New(options Options) *service {
+func New(options Options) *Service {
 
-	return &service{
+	return &Service{
 		config:    options.Config,
 		logger:    logger.WithScopeLogger(options.Logger, "cluster"),
 		validate:  validator.New(validator.WithRequiredStructEnabled()),

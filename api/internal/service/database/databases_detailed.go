@@ -5,7 +5,7 @@ import (
 	"dashboard/api/internal/model/database"
 )
 
-func (s *service) DatabasesDetailed(ctx context.Context, filter database.DatabasesFilter) ([]database.DatabaseDetails, error) {
+func (s *Service) DatabasesDetailed(ctx context.Context, filter database.DatabasesFilter) ([]database.DatabaseDetails, error) {
 
 	databases, err := s.storage.DatabasesDetails(ctx, filter)
 	if err != nil {

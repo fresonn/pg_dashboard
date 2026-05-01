@@ -4,7 +4,6 @@ import (
 	"context"
 	"dashboard/api/gen/openapi"
 	"dashboard/api/internal/config"
-	"dashboard/api/internal/delivery/rest"
 	"dashboard/api/internal/postgres"
 	"dashboard/api/internal/service/cluster"
 	clusterCache "dashboard/api/internal/service/cluster/repo/cache"
@@ -13,6 +12,7 @@ import (
 	databaseRepo "dashboard/api/internal/service/database/repo/storage"
 	"dashboard/api/internal/service/roles"
 	rolesRepo "dashboard/api/internal/service/roles/repo/storage"
+	httpTransport "dashboard/api/internal/transport/http"
 	"dashboard/api/internal/utils"
 	"errors"
 	"fmt"
@@ -76,7 +76,7 @@ func New(cfg config.AppConfig, logger *slog.Logger) *App {
 		AllowCredentials: true,
 	}))
 
-	restHandler := rest.New(clusterService, rolesService, databaseService)
+	restHandler := httpTransport.New(clusterService, rolesService, databaseService)
 
 	strictHandler := openapi.NewStrictHandler(restHandler, nil)
 

@@ -5,7 +5,7 @@ import (
 	"dashboard/api/internal/model/cluster"
 )
 
-func (s *service) Uptime(ctx context.Context) (cluster.PostgresUptime, error) {
+func (s *Service) Uptime(ctx context.Context) (cluster.PostgresUptime, error) {
 
 	s.logger.DebugContext(ctx, "try to get cluster uptime")
 

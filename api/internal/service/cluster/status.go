@@ -5,7 +5,7 @@ import (
 	"dashboard/api/internal/model/cluster"
 )
 
-func (s *service) PostgresStatus(ctx context.Context) cluster.Status {
+func (s *Service) PostgresStatus(ctx context.Context) cluster.Status {
 
 	status := s.pgManager.Status()
 

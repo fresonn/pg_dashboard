@@ -33,7 +33,7 @@ var postmasterParams = []string{
 
 // More about pg_settings and its context values
 // https://www.postgresql.org/docs/current/view-pg-settings.html
-func (s *service) PostmasterSettings(ctx context.Context) (cluster.PostmasterSettings, error) {
+func (s *Service) PostmasterSettings(ctx context.Context) (cluster.PostmasterSettings, error) {
 
 	settings, err := s.storage.PostmasterSettings(ctx, postmasterParams)
 	if err != nil {

@@ -9,7 +9,7 @@ import (
 )
 
 // todo: cluster.AuthData -> cluster.NewConnection
-func (s *service) Connect(ctx context.Context, authData cluster.AuthData) (cluster.Status, error) {
+func (s *Service) Connect(ctx context.Context, authData cluster.AuthData) (cluster.Status, error) {
 
 	s.logger.Info("try to establish postgres connection")
 

@@ -1,22 +1,15 @@
 package roles
 
 import (
-	"context"
 	"dashboard/api/internal/config"
 	"dashboard/api/internal/postgres"
 	"dashboard/api/pkg/logger"
 	"log/slog"
 
-	"dashboard/api/internal/model/role"
-
 	"github.com/go-playground/validator/v10"
 )
 
-type Service interface {
-	Roles(ctx context.Context) ([]role.RoleView, error)
-}
-
-type service struct {
+type Service struct {
 	config    config.AppConfig
 	logger    *slog.Logger
 	pgManager *postgres.Manager
@@ -31,11 +24,11 @@ type Options struct {
 	Storage         Storage
 }
 
-func New(options Options) *service {
+func New(options Options) *Service {
 
-	return &service{
+	return &Service{
 		config:    options.Config,
-		logger:    logger.WithScopeLogger(options.Logger, "cluster"),
+		logger:    logger.WithScopeLogger(options.Logger, "role"),
 		validate:  validator.New(validator.WithRequiredStructEnabled()),
 		storage:   options.Storage,
 		pgManager: options.PostgresManager,
