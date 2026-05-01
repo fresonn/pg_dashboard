@@ -2,7 +2,7 @@ package storage
 
 import (
 	"dashboard/api/internal/config"
-	"dashboard/api/internal/postgres"
+	"dashboard/api/internal/infra/postgres"
 	"log/slog"
 )
 

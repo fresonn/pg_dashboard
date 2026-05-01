@@ -1,8 +1,8 @@
 package storage
 
 import (
+	"dashboard/api/internal/infra/postgres"
 	"dashboard/api/internal/model/cluster"
-	"dashboard/api/internal/postgres"
 )
 
 type Setting struct {

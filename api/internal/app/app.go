@@ -4,7 +4,7 @@ import (
 	"context"
 	"dashboard/api/gen/openapi"
 	"dashboard/api/internal/config"
-	"dashboard/api/internal/postgres"
+	"dashboard/api/internal/infra/postgres"
 	"dashboard/api/internal/service/cluster"
 	clusterCache "dashboard/api/internal/service/cluster/repo/cache"
 	clusterRepo "dashboard/api/internal/service/cluster/repo/storage"

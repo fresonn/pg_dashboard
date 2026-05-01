@@ -2,7 +2,7 @@ package cluster
 
 import (
 	"dashboard/api/internal/config"
-	"dashboard/api/internal/postgres"
+	"dashboard/api/internal/infra/postgres"
 	"dashboard/api/pkg/logger"
 	"log/slog"
 

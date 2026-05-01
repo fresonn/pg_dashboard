@@ -1,7 +1,7 @@
 package cluster
 
 import (
-	"dashboard/api/internal/postgres"
+	"dashboard/api/internal/infra/postgres"
 	"log/slog"
 	"time"
 )
