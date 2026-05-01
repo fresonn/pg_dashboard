@@ -1,4 +1,4 @@
-package app
+package http
 
 import (
 	"dashboard/api/internal/ctxkeys"
@@ -7,7 +7,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func requestIDMiddleware(next http.Handler) http.Handler {
+func RequestIDMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		requestID := r.Header.Get("X-Request-ID")

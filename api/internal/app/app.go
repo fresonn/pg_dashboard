@@ -74,7 +74,7 @@ func New(cfg config.AppConfig) *App {
 	})
 
 	r := chi.NewRouter()
-	r.Use(requestIDMiddleware)
+	r.Use(httpTransport.RequestIDMiddleware)
 	r.Use(cors.Handler(cors.Options{
 		AllowedOrigins:   []string{"*"}, // todo: make it dynamic
 		AllowedHeaders:   []string{"*"},
