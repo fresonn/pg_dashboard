@@ -4,15 +4,19 @@ import (
 	"context"
 	"dashboard/api/gen/openapi"
 	"dashboard/api/internal/config"
-	"dashboard/api/internal/delivery/rest"
-	"dashboard/api/internal/postgres"
-	"dashboard/api/internal/scopes/cluster"
-	clusterCache "dashboard/api/internal/scopes/cluster/repo/cache"
-	repo "dashboard/api/internal/scopes/cluster/repo/storage"
-	"dashboard/api/internal/utils"
+	"dashboard/api/internal/helper"
+	"dashboard/api/internal/infra/logger"
+	"dashboard/api/internal/infra/postgres"
+	"dashboard/api/internal/service/cluster"
+	clusterCache "dashboard/api/internal/service/cluster/repo/cache"
+	clusterPostgresRepo "dashboard/api/internal/service/cluster/repo/postgres"
+	"dashboard/api/internal/service/database"
+	databasePostgresRepo "dashboard/api/internal/service/database/repo/postgres"
+	"dashboard/api/internal/service/roles"
+	rolesPostgresRepo "dashboard/api/internal/service/roles/repo/postgres"
+	httpTransport "dashboard/api/internal/transport/http"
 	"errors"
 	"fmt"
-	"log/slog"
 	"net"
 	"net/http"
 	"os"
@@ -28,34 +32,56 @@ import (
 type App struct {
 	config config.AppConfig
 	router http.Handler
-	log    *slog.Logger
+	log    logger.Logger
 }
 
-func New(cfg config.AppConfig, logger *slog.Logger) *App {
+func New(cfg config.AppConfig) *App {
 
-	pgManager := postgres.New(cfg, logger)
+	slogLogger := logger.New(cfg)
 
-	clusterStorage := repo.New(cfg, logger, pgManager)
+	pgManager := postgres.New(cfg, slogLogger)
 
-	clusterCache := clusterCache.New(&cfg, logger)
+	clusterLogger := logger.WithScopeLogger(slogLogger, "cluster")
+	clusterPostgres := clusterPostgresRepo.New(cfg, clusterLogger, pgManager)
+	clusterCache := clusterCache.New(cfg, clusterLogger)
 
-	clusterScope := cluster.New(cluster.Options{
+	clusterService := cluster.New(cluster.Options{
 		Config:          cfg,
-		Logger:          logger,
 		PostgresManager: pgManager,
-		Storage:         clusterStorage,
+		Logger:          clusterLogger,
+		PostgresRepo:    clusterPostgres,
 		Cache:           clusterCache,
 	})
 
+	rolesLogger := logger.WithScopeLogger(slogLogger, "role")
+	rolesPostgres := rolesPostgresRepo.New(cfg, rolesLogger, pgManager)
+
+	rolesService := roles.New(roles.Options{
+		Config:          cfg,
+		Logger:          rolesLogger,
+		PostgresManager: pgManager,
+		PostgresRepo:    rolesPostgres,
+	})
+
+	databaseLogger := logger.WithScopeLogger(slogLogger, "database")
+	databasePostgres := databasePostgresRepo.New(cfg, databaseLogger, pgManager)
+
+	databaseService := database.New(database.Options{
+		Config:          cfg,
+		Logger:          databaseLogger,
+		PostgresManager: pgManager,
+		PostgresRepo:    databasePostgres,
+	})
+
 	r := chi.NewRouter()
-	r.Use(requestIDMiddleware)
+	r.Use(httpTransport.RequestIDMiddleware)
 	r.Use(cors.Handler(cors.Options{
 		AllowedOrigins:   []string{"*"}, // todo: make it dynamic
 		AllowedHeaders:   []string{"*"},
 		AllowCredentials: true,
 	}))
 
-	restHandler := rest.New(clusterScope)
+	restHandler := httpTransport.New(clusterService, rolesService, databaseService)
 
 	strictHandler := openapi.NewStrictHandler(restHandler, nil)
 
@@ -63,7 +89,7 @@ func New(cfg config.AppConfig, logger *slog.Logger) *App {
 
 	return &App{
 		config: cfg,
-		log:    logger,
+		log:    slogLogger,
 		router: handler,
 	}
 }
@@ -73,7 +99,7 @@ func (a *App) Run() {
 	ctx, cancel := context.WithCancel(context.Background())
 
 	server := &http.Server{
-		Addr:    ":" + utils.IntToString(a.config.Env.Port),
+		Addr:    ":" + helper.IntToString(a.config.Env.Port),
 		Handler: a.router,
 		BaseContext: func(net.Listener) context.Context {
 			return ctx

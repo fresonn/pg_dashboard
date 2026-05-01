@@ -9,8 +9,9 @@ import (
 	"fmt"
 	"net/http"
 
-	"dashboard/api/internal/scopes/cluster/entities"
-	clusterEntities "dashboard/api/internal/scopes/cluster/entities"
+	clusterEntities "dashboard/api/internal/model/cluster"
+	databaseEntities "dashboard/api/internal/model/database"
+	roleEntities "dashboard/api/internal/model/role"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/oapi-codegen/runtime"
@@ -44,7 +45,7 @@ type ClusterConnectData = clusterEntities.AuthData
 type ConnectionStatus string
 
 // Database Represents database entity from Postgres system catalog
-type Database = clusterEntities.DatabaseDetails
+type Database = databaseEntities.DatabaseDetails
 
 // ErrorBase Error part that should be present in all errors
 type ErrorBase struct {
@@ -78,13 +79,13 @@ type RequestValidationError struct {
 }
 
 // RoleAccessLevel Admin > Elevated > Standard > Limited
-type RoleAccessLevel = clusterEntities.RoleAccessLevel
+type RoleAccessLevel = roleEntities.RoleAccessLevel
 
 // RoleAttributes https://www.postgresql.org/docs/current/role-attributes.html#ROLE-ATTRIBUTES
-type RoleAttributes = clusterEntities.RoleAttribute
+type RoleAttributes = roleEntities.RoleAttribute
 
 // RoleView defines model for RoleView.
-type RoleView = entities.RoleView
+type RoleView = roleEntities.RoleView
 
 // DatabasesDetailedParams defines parameters for DatabasesDetailed.
 type DatabasesDetailedParams struct {

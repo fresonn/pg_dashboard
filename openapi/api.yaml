@@ -199,7 +199,8 @@ paths:
                     name: autovacuum_max_workers
                     value: "4"
                     unit: ""
-                    description: Sets the maximum number of simultaneously running autovacuum worker
+                    description:
+                      Sets the maximum number of simultaneously running autovacuum worker
                       processes.
         "400":
           description: Attempt failed
@@ -221,7 +222,7 @@ paths:
           required: false
           schema:
             type: string
-            enum: [ size, connection ]
+            enum: [size, connection]
           x-oapi-codegen-extra-tags:
             validate: "omitempty,oneof=size connection"
         - name: order
@@ -230,7 +231,7 @@ paths:
           required: false
           schema:
             type: string
-            enum: [ asc, desc ]
+            enum: [asc, desc]
           x-oapi-codegen-extra-tags:
             validate: "omitempty,oneof=asc desc"
           # default: desc
@@ -302,7 +303,7 @@ components:
       type: string
       description: Represents connection state between dashboard and postgres
       example: connected
-      enum: [ connecting, connected, disconnected, error ]
+      enum: [connecting, connected, disconnected, error]
       x-enum-varnames:
         - PgConnectionStatusConnecting,
         - PgConnectionStatusConnected,
@@ -313,7 +314,7 @@ components:
       description: Represents some columns from "pg_catalog.pg_settings"
       x-go-type: clusterEntities.Setting
       x-go-type-import:
-        path: dashboard/api/internal/scopes/cluster/entities
+        path: dashboard/api/internal/model/cluster
         name: Setting
       x-go-type-name: clusterEntities.Setting
       required:
@@ -337,11 +338,11 @@ components:
     Database:
       type: object
       description: Represents database entity from Postgres system catalog
-      x-go-type: clusterEntities.DatabaseDetails
+      x-go-type: databaseEntities.DatabaseDetails
       x-go-type-import:
-        path: dashboard/api/internal/scopes/cluster/entities
-        name: DatabaseDetails
-      x-go-type-name: clusterEntities.DatabaseDetails
+        path: dashboard/api/internal/model/database
+        name: databaseEntities
+      x-go-type-name: databaseEntities.DatabaseDetails
       required:
         - id
         - name
@@ -411,7 +412,7 @@ components:
     ClusterConnectData:
       x-go-type: clusterEntities.AuthData
       x-go-type-import:
-        path: dashboard/api/internal/scopes/cluster/entities
+        path: dashboard/api/internal/model/cluster
         name: clusterEntities
       x-go-type-name: clusterEntities.AuthData
       type: object
@@ -443,7 +444,7 @@ components:
     GetPostgresVersionResponse:
       x-go-type: clusterEntities.PostgresVersion
       x-go-type-import:
-        path: dashboard/api/internal/scopes/cluster/entities
+        path: dashboard/api/internal/model/cluster
         name: clusterEntities
       x-go-type-name: clusterEntities.PostgresVersion
       type: object
@@ -464,7 +465,7 @@ components:
     GetPostgresUptimeResponse:
       x-go-type: clusterEntities.PostgresUptime
       x-go-type-import:
-        path: dashboard/api/internal/scopes/cluster/entities
+        path: dashboard/api/internal/model/cluster
         name: clusterEntities
       x-go-type-name: clusterEntities.PostgresUptime
       type: object
@@ -478,7 +479,7 @@ components:
     GetPostgresPostmasterSettings:
       x-go-type: clusterEntities.PostmasterSettings
       x-go-type-import:
-        path: dashboard/api/internal/scopes/cluster/entities
+        path: dashboard/api/internal/model/cluster
         name: PostmasterSettings
       x-go-type-name: clusterEntities.PostmasterSettings
       type: object
@@ -517,10 +518,11 @@ components:
         - elevated
         - standard
         - limited
-      x-go-type: clusterEntities.RoleAccessLevel
+      x-go-type: roleEntities.RoleAccessLevel
       x-go-type-import:
-        path: dashboard/api/internal/scopes/cluster/entities
-        name: clusterEntities
+        path: dashboard/api/internal/model/role
+        name: roleEntities
+      x-go-type-name: roleEntities.RoleAccessLevel
     RoleAttributes:
       type: string
       description: https://www.postgresql.org/docs/current/role-attributes.html#ROLE-ATTRIBUTES
@@ -530,10 +532,11 @@ components:
         - createRole
         - createDatabase
         - replication
-      x-go-type: clusterEntities.RoleAttribute
+      x-go-type: roleEntities.RoleAttribute
       x-go-type-import:
-        path: dashboard/api/internal/scopes/cluster/entities
-        name: clusterEntities
+        path: dashboard/api/internal/model/role
+        name: roleEntities
+      x-go-type-name: roleEntities.RoleAttribute
     RoleView:
       type: object
       required:
@@ -543,10 +546,11 @@ components:
         - accessLevel
         - membership
         - attributes
-      x-go-type: entities.RoleView
+      x-go-type: roleEntities.RoleView
       x-go-type-import:
-        path: dashboard/api/internal/scopes/cluster/entities
-        name: clusterEntities
+        path: dashboard/api/internal/model/role
+        name: roleEntities
+      x-go-type-name: roleEntities.RoleView
       properties:
         id:
           type: string
