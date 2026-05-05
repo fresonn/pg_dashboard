@@ -11,6 +11,7 @@ import (
 	clusterCache "dashboard/api/internal/service/cluster/repo/cache"
 	clusterPostgresRepo "dashboard/api/internal/service/cluster/repo/postgres"
 	"dashboard/api/internal/service/database"
+	databaseCache "dashboard/api/internal/service/database/repo/cache"
 	databasePostgresRepo "dashboard/api/internal/service/database/repo/postgres"
 	"dashboard/api/internal/service/roles"
 	rolesPostgresRepo "dashboard/api/internal/service/roles/repo/postgres"
@@ -65,12 +66,14 @@ func New(cfg config.AppConfig) *App {
 
 	databaseLogger := logger.WithScopeLogger(slogLogger, "database")
 	databasePostgres := databasePostgresRepo.New(cfg, databaseLogger, pgManager)
+	databaseCache := databaseCache.New(cfg, databaseLogger)
 
 	databaseService := database.New(database.Options{
 		Config:          cfg,
 		Logger:          databaseLogger,
 		PostgresManager: pgManager,
 		PostgresRepo:    databasePostgres,
+		Cache:           databaseCache,
 	})
 
 	r := chi.NewRouter()
