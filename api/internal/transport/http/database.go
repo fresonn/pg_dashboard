@@ -8,6 +8,19 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
+func (h *Handler) Database(ctx context.Context, req openapi.DatabaseRequestObject) (openapi.DatabaseResponseObject, error) {
+
+	db, err := h.database.Database(ctx, req.DatabaseId)
+	if err != nil {
+
+		return openapi.Database400JSONResponse{
+			Message: err.Error(),
+		}, nil
+	}
+
+	return openapi.Database200JSONResponse(db), nil
+}
+
 func (h *Handler) DatabasesDetailed(ctx context.Context, request openapi.DatabasesDetailedRequestObject) (openapi.DatabasesDetailedResponseObject, error) {
 
 	params := request.Params

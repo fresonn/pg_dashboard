@@ -44,8 +44,11 @@ type ClusterConnectData = clusterEntities.AuthData
 // ConnectionStatus Represents connection state between dashboard and postgres
 type ConnectionStatus string
 
-// Database Represents database entity from Postgres system catalog
-type Database = databaseEntities.DatabaseDetails
+// Database Represents database entity
+type Database = databaseEntities.Database
+
+// DatabaseDetails Represents database entity from Postgres system catalog
+type DatabaseDetails = databaseEntities.DatabaseDetails
 
 // ErrorBase Error part that should be present in all errors
 type ErrorBase struct {
@@ -131,6 +134,9 @@ type ServerInterface interface {
 	// Get detailed Postgres version info
 	// (GET /cluster/version)
 	PostgresVersion(w http.ResponseWriter, r *http.Request)
+	// Find database by identifier
+	// (GET /database/{databaseId})
+	Database(w http.ResponseWriter, r *http.Request, databaseId int)
 }
 
 // Unimplemented server implementation that returns http.StatusNotImplemented for each endpoint.
@@ -182,6 +188,12 @@ func (_ Unimplemented) PostgresUptime(w http.ResponseWriter, r *http.Request) {
 // Get detailed Postgres version info
 // (GET /cluster/version)
 func (_ Unimplemented) PostgresVersion(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Find database by identifier
+// (GET /database/{databaseId})
+func (_ Unimplemented) Database(w http.ResponseWriter, r *http.Request, databaseId int) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -318,6 +330,31 @@ func (siw *ServerInterfaceWrapper) PostgresVersion(w http.ResponseWriter, r *htt
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.PostgresVersion(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// Database operation middleware
+func (siw *ServerInterfaceWrapper) Database(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "databaseId" -------------
+	var databaseId int
+
+	err = runtime.BindStyledParameterWithOptions("simple", "databaseId", chi.URLParam(r, "databaseId"), &databaseId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "databaseId", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.Database(w, r, databaseId)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -464,6 +501,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/cluster/version", wrapper.PostgresVersion)
 	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/database/{databaseId}", wrapper.Database)
+	})
 
 	return r
 }
@@ -523,7 +563,7 @@ type DatabasesDetailedResponseObject interface {
 	VisitDatabasesDetailedResponse(w http.ResponseWriter) error
 }
 
-type DatabasesDetailed200JSONResponse []Database
+type DatabasesDetailed200JSONResponse []DatabaseDetails
 
 func (response DatabasesDetailed200JSONResponse) VisitDatabasesDetailedResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -712,6 +752,41 @@ func (response PostgresVersion400JSONResponse) VisitPostgresVersionResponse(w ht
 	return json.NewEncoder(w).Encode(response)
 }
 
+type DatabaseRequestObject struct {
+	DatabaseId int `json:"databaseId"`
+}
+
+type DatabaseResponseObject interface {
+	VisitDatabaseResponse(w http.ResponseWriter) error
+}
+
+type Database200JSONResponse Database
+
+func (response Database200JSONResponse) VisitDatabaseResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type Database400JSONResponse ErrorBase
+
+func (response Database400JSONResponse) VisitDatabaseResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type Database404JSONResponse ErrorBase
+
+func (response Database404JSONResponse) VisitDatabaseResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
 	// Connect to Postgres cluster
@@ -738,6 +813,9 @@ type StrictServerInterface interface {
 	// Get detailed Postgres version info
 	// (GET /cluster/version)
 	PostgresVersion(ctx context.Context, request PostgresVersionRequestObject) (PostgresVersionResponseObject, error)
+	// Find database by identifier
+	// (GET /database/{databaseId})
+	Database(ctx context.Context, request DatabaseRequestObject) (DatabaseResponseObject, error)
 }
 
 type StrictHandlerFunc = strictnethttp.StrictHTTPHandlerFunc
@@ -963,6 +1041,32 @@ func (sh *strictHandler) PostgresVersion(w http.ResponseWriter, r *http.Request)
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(PostgresVersionResponseObject); ok {
 		if err := validResponse.VisitPostgresVersionResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// Database operation middleware
+func (sh *strictHandler) Database(w http.ResponseWriter, r *http.Request, databaseId int) {
+	var request DatabaseRequestObject
+
+	request.DatabaseId = databaseId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.Database(ctx, request.(DatabaseRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "Database")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(DatabaseResponseObject); ok {
+		if err := validResponse.VisitDatabaseResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

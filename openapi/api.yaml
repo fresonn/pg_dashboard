@@ -7,7 +7,9 @@ servers:
   - url: http://localhost:8001/api
 tags:
   - name: cluster
-    description: Everything related to Postgres cluster data
+    description: Everything related to Postgres cluster level settings and objects
+  - name: database
+    description: Everything related to Postgres database level settings and objects
 paths:
   /cluster/status:
     get:
@@ -199,8 +201,7 @@ paths:
                     name: autovacuum_max_workers
                     value: "4"
                     unit: ""
-                    description:
-                      Sets the maximum number of simultaneously running autovacuum worker
+                    description: Sets the maximum number of simultaneously running autovacuum worker
                       processes.
         "400":
           description: Attempt failed
@@ -222,7 +223,7 @@ paths:
           required: false
           schema:
             type: string
-            enum: [size, connection]
+            enum: [ size, connection ]
           x-oapi-codegen-extra-tags:
             validate: "omitempty,oneof=size connection"
         - name: order
@@ -231,7 +232,7 @@ paths:
           required: false
           schema:
             type: string
-            enum: [asc, desc]
+            enum: [ asc, desc ]
           x-oapi-codegen-extra-tags:
             validate: "omitempty,oneof=asc desc"
           # default: desc
@@ -243,7 +244,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Database"
+                  $ref: "#/components/schemas/DatabaseDetails"
         "400":
           description: Attempt failed
           content:
@@ -278,6 +279,39 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorBase"
+  /database/{databaseId}:
+    get:
+      tags:
+        - database
+      summary: Find database by identifier
+      description: Returns a single database
+      operationId: Database
+      parameters:
+        - name: databaseId
+          in: path
+          description: ID of database to return
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Database"
+        "400":
+          description: Attempt to get database failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorBase"
+        "404":
+          description: Database not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorBase"
 components:
   schemas:
     ErrorBase:
@@ -303,7 +337,7 @@ components:
       type: string
       description: Represents connection state between dashboard and postgres
       example: connected
-      enum: [connecting, connected, disconnected, error]
+      enum: [ connecting, connected, disconnected, error ]
       x-enum-varnames:
         - PgConnectionStatusConnecting,
         - PgConnectionStatusConnected,
@@ -336,6 +370,61 @@ components:
           type: string
           example: Sets the number of...
     Database:
+      type: object
+      description: Represents database entity
+      x-go-type: databaseEntities.Database
+      x-go-type-import:
+        path: dashboard/api/internal/model/database
+        name: databaseEntities
+      x-go-type-name: databaseEntities.Database
+      required:
+        - id
+        - name
+        - owner
+        - encoding
+        - connectionLimit
+        - allowConnections
+        - isTemplate
+        - tablespace
+        - sizeBytes
+        - sizePretty
+        - description
+      properties:
+        id:
+          type: string
+          description: This is essentially a Postgres OID.
+          example: "1"
+        name:
+          type: string
+          example: postgres
+        owner:
+          type: string
+          example: postgres
+        encoding:
+          type: string
+          example: UTF8
+        connectionLimit:
+          type: integer
+          example: -1
+        allowConnections:
+          type: boolean
+          example: true
+        isTemplate:
+          type: boolean
+          example: false
+        tablespace:
+          type: string
+          example: pg_default
+        sizeBytes:
+          type: integer
+          example: 10138083
+        sizePretty:
+          type: string
+          example: 9.7 MB
+        description:
+          type: string
+          example: Description text if it exists
+    DatabaseDetails:
       type: object
       description: Represents database entity from Postgres system catalog
       x-go-type: databaseEntities.DatabaseDetails
