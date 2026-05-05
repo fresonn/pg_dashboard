@@ -34,7 +34,38 @@ func toDatabaseDetailsEntity(dto DatabaseDetails) database.DatabaseDetails {
 		AllowConnections: dto.AllowConnections,
 		ConnectionLimit:  dto.ConnectionLimit,
 		SizeBytes:        dto.SizeBytes,
-		// SizePretty - skip
+		SizePretty:       helper.PrettyByteSize(dto.SizeBytes),
 		TotalConnections: dto.TotalConnections,
+	}
+}
+
+type DatabaseByOID struct {
+	OID  int    `db:"oid"`
+	Name string `db:"name"`
+	// If the OID is invalid or the role has been deleted, the function "pg_get_userbyid(owner_id)", will return NULL
+	Owner postgres.Text `db:"owner"`
+	// Encoding NULL, if the base is damaged, theoretically
+	Encoding         postgres.Text `db:"encoding"`
+	ConnectionLimit  int           `db:"connection_limit"`
+	AllowConnections bool          `db:"allow_connections"`
+	IsTemplate       bool          `db:"is_template"`
+	TableSpace       string        `db:"tablespace"`
+	SizeBytes        int64         `db:"size_bytes"`
+	Description      postgres.Text `db:"description"`
+}
+
+func toDatabase(dto DatabaseByOID) database.Database {
+	return database.Database{
+		ID:               helper.IntToString(dto.OID),
+		Name:             dto.Name,
+		Owner:            dto.Owner.String(),
+		Encoding:         dto.Encoding.String(),
+		ConnectionLimit:  dto.ConnectionLimit,
+		IsTemplate:       dto.IsTemplate,
+		AllowConnections: dto.AllowConnections,
+		Tablespace:       dto.TableSpace,
+		SizeBytes:        dto.SizeBytes,
+		SizePretty:       helper.PrettyByteSize(dto.SizeBytes),
+		Description:      dto.Description.String(),
 	}
 }
