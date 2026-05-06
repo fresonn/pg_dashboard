@@ -19,3 +19,17 @@ type DatabaseDetails struct {
 	SizePretty       string `json:"sizePretty"`
 	TotalConnections int    `json:"totalConnections"`
 }
+
+type Database struct {
+	ID               string `json:"id"`
+	Name             string `json:"name"`
+	Owner            string `json:"owner"`
+	Encoding         string `json:"encoding"`
+	ConnectionLimit  int    `json:"connectionLimit"`
+	AllowConnections bool   `json:"allowConnections"`
+	IsTemplate       bool   `json:"isTemplate"`
+	Tablespace       string `json:"tablespace"`
+	SizeBytes        int64  `json:"sizeBytes"`
+	SizePretty       string `json:"sizePretty"`
+	Description      string `json:"description"`
+}

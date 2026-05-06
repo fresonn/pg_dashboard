@@ -2,7 +2,6 @@ package postgres
 
 import (
 	"context"
-	"dashboard/api/internal/helper"
 	"dashboard/api/internal/model/database"
 	"fmt"
 )
@@ -62,10 +61,7 @@ func (s *Storage) DatabasesDetails(ctx context.Context, filter database.Database
 	databases := make([]database.DatabaseDetails, 0, len(dtos))
 
 	for _, d := range dtos {
-		entity := toDatabaseDetailsEntity(d)
-		entity.SizePretty = helper.PrettyByteSize(d.SizeBytes)
-
-		databases = append(databases, entity)
+		databases = append(databases, toDatabaseDetailsEntity(d))
 	}
 
 	return databases, nil
