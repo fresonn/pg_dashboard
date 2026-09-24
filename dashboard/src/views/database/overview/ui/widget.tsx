@@ -15,7 +15,7 @@ export function WidgetErrorFallback() {
   )
 }
 
-const widgetContainer = cva('bg-section-box rounded-lg border p-5')
+const widgetContainer = cva('bg-secondary shadow-surface rounded-lg border p-5')
 
 export function Widget({
   title,

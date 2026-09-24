@@ -11,7 +11,6 @@ export function TablePagination<TData>({ table }: DataTablePaginationProps<TData
     <div className="flex items-center">
       <Button
         type="button"
-        variant="outline"
         className="mr-2.5 pr-2 pl-2"
         onClick={() => table.previousPage()}
         disabled={!table.getCanPreviousPage()}
@@ -19,7 +18,6 @@ export function TablePagination<TData>({ table }: DataTablePaginationProps<TData
         <ChevronRightIcon className="rotate-180" />
       </Button>
       <Button
-        variant="outline"
         className="pr-2 pl-2"
         onClick={() => table.nextPage()}
         disabled={!table.getCanNextPage()}

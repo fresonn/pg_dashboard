@@ -44,7 +44,7 @@ export function RolesTable({ data }: { data: Role[] }) {
     <div>
       <div className="relative">
         <Table>
-          <TableHeader className="pointer-events-none bg-neutral-900">
+          <TableHeader className="pointer-events-none">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
