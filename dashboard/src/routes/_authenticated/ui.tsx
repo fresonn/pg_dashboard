@@ -30,7 +30,7 @@ function RouteComponent() {
     <div>
       <Header title="UI samples" />
 
-      <Button>Click me!</Button>
+      <Button>Default</Button>
       <Button variant="destructive">Click me!</Button>
       <Button variant="outline">Outline</Button>
       <Button variant="secondary">Secondary</Button>
@@ -56,6 +56,39 @@ function RouteComponent() {
           <Input disabled placeholder="Port" type="number" />
         </div>
       </div>
+
+      <button
+        type="button"
+        className="ease-power3-out focus-visible:ring-ring/60 bg-secondary text-secondary-foreground hover:bg-muted group data-[state=open]:bg-muted inline-flex h-[30px] shrink-0 cursor-pointer items-center justify-center gap-0 overflow-hidden rounded-full p-0 text-[12px] font-medium whitespace-nowrap shadow-[0px_0px_0px_1px_rgba(0,0,0,0.4),inset_0px_1px_0px_0px_rgba(255,255,255,0.1),inset_0px_0px_0px_1px_rgba(255,255,255,0.06)] transition-[background-color,color,box-shadow] duration-150 outline-none select-none focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50"
+        id="radix-_R_955flb_"
+        aria-haspopup="menu"
+        aria-expanded="false"
+        data-state="closed"
+        data-slot="dropdown-menu-trigger"
+      >
+        <span className="text-subtle px-[9px] font-normal">Last Activity</span>
+        <span aria-hidden="true" className="h-full w-px bg-white/8"></span>
+        <span className="flex items-center gap-1.5 px-[9px]">
+          90 Days
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="1em"
+            height="1em"
+            fill="none"
+            viewBox="0 0 12 12"
+            aria-hidden="true"
+            className="ease-power3-out size-3 text-[#898b8d] transition-transform duration-200 group-data-[state=open]:rotate-180"
+          >
+            <path
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.4"
+              d="m3 4.5 3 3 3-3"
+            ></path>
+          </svg>
+        </span>
+      </button>
 
       <div className="mb-10">
         <h1>Role attrs</h1>

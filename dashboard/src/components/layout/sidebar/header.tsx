@@ -20,14 +20,17 @@ const logo = cva('shrink-0 transition-all duration-200', {
   }
 })
 
-const title = cva('pl-1.5 whitespace-nowrap transition-opacity duration-200 select-none', {
-  variants: {
-    open: {
-      true: 'opacity-100',
-      false: 'pointer-events-none opacity-0'
+const title = cva(
+  'pl-1.5 whitespace-nowrap text-white transition-opacity duration-200 select-none',
+  {
+    variants: {
+      open: {
+        true: 'opacity-100',
+        false: 'pointer-events-none opacity-0'
+      }
     }
   }
-})
+)
 
 export function Header() {
   const { open } = useSidebar()

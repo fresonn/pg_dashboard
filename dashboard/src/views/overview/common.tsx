@@ -15,21 +15,13 @@ export function WidgetErrorFallback() {
   )
 }
 
-const widgetContainer = cva('rounded-lg border p-3', {
-  variants: {
-    withBackground: {
-      true: 'bg-section-box',
-      false: ''
-    }
-  }
-})
+const widgetContainer = cva('bg-secondary shadow-surface rounded-xl p-3')
 
 export function Widget({
   title,
   children,
   skeleton,
-  className,
-  withBackground = true
+  className
 }: {
   title: string
   children: ReactNode
@@ -38,9 +30,9 @@ export function Widget({
   withBackground?: boolean
 }) {
   return (
-    <div className={widgetContainer({ withBackground, className })}>
+    <div className={widgetContainer({ className })}>
       <div className="flex h-full flex-col">
-        <Typography variant="h4" className="text-theme-color mb-2">
+        <Typography variant="h5" className="text-theme-color mb-3">
           {title}
         </Typography>
         <div className="min-h-0 flex-1">

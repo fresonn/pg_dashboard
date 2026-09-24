@@ -26,7 +26,6 @@ export function ClusterOverview() {
             <Widget
               title="Version"
               className="col-span-3 row-span-4"
-              // withBackground={false}
               skeleton={<VersionWidgetSkeleton />}
             >
               <VersionWidget />
@@ -34,7 +33,6 @@ export function ClusterOverview() {
             <Widget
               title="Uptime"
               className="col-span-3 row-span-4"
-              // withBackground={false}
               skeleton={<UptimeWidgetSkeleton />}
             >
               <UptimeWidget />

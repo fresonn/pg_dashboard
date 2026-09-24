@@ -14,7 +14,7 @@ export const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: 'bg-theme-color text-black hover:bg-green-400',
+        default: 'surface-raised',
         destructive: 'focus-visible:ring-destructive/40 bg-red-500 text-white hover:bg-red-400',
         outline:
           'hover:text-accent-foreground bg-input/30 border-input hover:bg-input/50 border shadow-xs',
