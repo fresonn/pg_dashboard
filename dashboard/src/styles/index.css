@@ -9,8 +9,8 @@
   --color-section-box: #131314;
   --blur-2xs: 2px;
   --shadow-surface:
-    0px 0px 0px 1px rgba(0, 0, 0, 0.4), inset 0px 1px 0px 0px rgba(255, 255, 255, 0.1),
-    inset 0px 0px 0px 1px rgba(255, 255, 255, 0.06);
+    0px 0px 0px 1px rgba(0, 0, 0, 0.5), inset 0px 1px 0px 0px rgba(255, 255, 255, 0.08),
+    inset 0px 0px 0px 1px rgba(255, 255, 255, 0.05);
 }
 
 @theme inline {
@@ -53,15 +53,15 @@
 
 :root {
   --radius: 0.625rem;
-  --background: #161616;
-  --foreground: #f9fbff;
+  --background: #0a0a0b;
+  --foreground: #ededef;
   --card: #1b1d20;
   --card-foreground: #f9fbff;
   --popover: #161616;
   --popover-foreground: #f9fbff;
   --primary: oklch(0.922 0 0);
   --primary-foreground: oklch(0.205 0 0);
-  --secondary: #1e1e1e;
+  --secondary: #17171a;
   --secondary-foreground: #f9fbff;
   --muted: #2a2a2a;
   --muted-foreground: #7f7f7f;
@@ -76,8 +76,8 @@
   --chart-3: oklch(0.769 0.188 70.08);
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: #171717;
-  --sidebar-foreground: #7f7f7f;
+  --sidebar: transparent;
+  --sidebar-foreground: #a1a1aa;
   --sidebar-primary: #2a2a2a;
   --sidebar-primary-foreground: #f9fbff;
   --sidebar-accent: #181818;
@@ -99,20 +99,20 @@
 
 @utility surface-raised {
   transition: box-shadow 150ms ease;
-  background: linear-gradient(180deg, #333333 0%, #2d2d2d 45%, #292929 100%);
-  box-shadow:
-    inset 0 0 0 0.5px rgba(255, 255, 255, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05),
-    0 1px 2px rgba(0, 0, 0, 0.35);
 
-  /* background: linear-gradient(180deg, #2e2e2e 0%, #292929 45%, #252525 100%); */
+  background: linear-gradient(180deg, #202023 0%, #1d1d20 45%, #1a1a1d 100%);
+
+  box-shadow:
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.07),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 1px 2px rgba(0, 0, 0, 0.5);
 
   &:hover {
-    background: linear-gradient(180deg, #383838 0%, #313131 45%, #2d2d2d 100%);
+    background: linear-gradient(180deg, #242427 0%, #202023 45%, #1d1d20 100%);
 
     box-shadow:
-      inset 0 0 0 0.5px rgba(255, 255, 255, 0.1),
-      inset 0 1px 0 rgba(255, 255, 255, 0.06),
-      0 1px 3px rgba(0, 0, 0, 0.4);
+      inset 0 0 0 0.5px rgba(255, 255, 255, 0.08),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05),
+      0 1px 3px rgba(0, 0, 0, 0.55);
   }
 }

@@ -74,7 +74,7 @@ export function Header({ title, className, fixed, children, ...props }: HeaderPr
           blurred: fixed && offset > 10
         })}
       >
-        <SidebarTrigger variant="outline" className="size-8" />
+        <SidebarTrigger variant="ghost" />
         <Separator orientation="vertical" className="h-9!" />
         <Typography variant="h2" as="h1">
           {title}
