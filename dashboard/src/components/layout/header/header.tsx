@@ -11,7 +11,7 @@ export type HeaderProps = React.HTMLAttributes<HTMLElement> & {
   ref?: React.Ref<HTMLElement>
 }
 
-const headerStyle = cva('z-50 mb-7 h-20 rounded-lg', {
+const headerStyle = cva('z-50 mb-4 h-20 rounded-lg py-4', {
   variants: {
     fixed: {
       true: 'header-fixed peer/header sticky top-0 w-[inherit]',
@@ -35,7 +35,7 @@ const headerStyle = cva('z-50 mb-7 h-20 rounded-lg', {
   }
 })
 
-const contentStyle = cva('relative flex h-full items-center gap-3 p-4 sm:gap-4', {
+const contentStyle = cva('relative flex items-center gap-3', {
   variants: {
     blurred: {
       true: 'after:bg-background/20 after:absolute after:inset-0 after:-z-10 after:backdrop-blur-lg',
@@ -76,7 +76,7 @@ export function Header({ title, className, fixed, children, ...props }: HeaderPr
       >
         <SidebarTrigger variant="ghost" />
         <Separator orientation="vertical" className="h-9!" />
-        <Typography variant="h2" as="h1">
+        <Typography variant="h3" as="h1">
           {title}
         </Typography>
         {children}

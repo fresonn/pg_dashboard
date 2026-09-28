@@ -5,10 +5,10 @@ const typography = cva('antialiased', {
   variants: {
     variant: {
       h1: 'scroll-m-20 text-4xl font-semibold tracking-tight',
-      h2: 'scroll-m-20 text-3xl font-semibold tracking-tight',
-      h3: 'scroll-m-20 text-2xl font-semibold tracking-tight',
-      h4: 'scroll-m-20 text-xl font-semibold tracking-tight',
-      h5: 'scroll-m-20 text-lg font-semibold tracking-tight',
+      h2: 'scroll-m-20 text-3xl font-semibold',
+      h3: 'scroll-m-20 text-2xl font-semibold',
+      h4: 'scroll-m-20 text-xl font-semibold',
+      h5: 'scroll-m-20 text-lg font-semibold',
       p: 'leading-7',
       muted: 'text-muted-foreground text-sm font-medium',
       lead: 'text-muted-foreground text-xl',
