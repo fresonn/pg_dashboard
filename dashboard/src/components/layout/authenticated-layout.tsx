@@ -6,9 +6,9 @@ export function AuthenticatedLayout() {
   return (
     <SidebarProvider defaultOpen={getSidebarState()}>
       <div className="flex h-screen w-full">
-        <AppSidebar className="relative w-72" />
-        <div className="p-2">
-          <div className="shadow-surface h-full flex-1 overflow-auto rounded-lg bg-[#111113] px-5 pt-2 pb-7">
+        <AppSidebar className="relative w-62" />
+        <div className="py-2">
+          <div className="shadow-main h-full flex-1 overflow-auto rounded-lg bg-[#111113] px-5 pt-2 pb-7">
             <Outlet />
           </div>
         </div>

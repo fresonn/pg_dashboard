@@ -11,6 +11,9 @@
   --shadow-surface:
     0px 0px 0px 1px rgba(0, 0, 0, 0.5), inset 0px 1px 0px 0px rgba(255, 255, 255, 0.08),
     inset 0px 0px 0px 1px rgba(255, 255, 255, 0.05);
+  --shadow-main:
+    0px 0px 0px 1px rgba(0, 0, 0, 0.75), inset 0px 1px 0px 0px rgba(255, 255, 255, 0.05),
+    inset 0px 0px 0px 1px rgba(255, 255, 255, 0.03);
 }
 
 @theme inline {
