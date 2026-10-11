@@ -11,10 +11,10 @@ export type HeaderProps = React.HTMLAttributes<HTMLElement> & {
   ref?: React.Ref<HTMLElement>
 }
 
-const headerStyle = cva('z-50 mb-4 h-20 rounded-lg py-4', {
+const headerStyle = cva('z-50 mb-5 h-17 rounded-lg py-4', {
   variants: {
     fixed: {
-      true: 'header-fixed peer/header sticky top-0 w-[inherit]',
+      true: 'header-fixed peer/header sticky top-0 w-full bg-[#111113]',
       false: ''
     },
     hasShadow: {
