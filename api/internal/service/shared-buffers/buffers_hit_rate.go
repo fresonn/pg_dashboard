@@ -3,7 +3,6 @@ package sharedbuffers
 import (
 	"context"
 	sharedBuffers "dashboard/api/internal/model/shared-buffers"
-	"fmt"
 )
 
 func (s *Service) ClusterBuffersHitRate(ctx context.Context) (sharedBuffers.BuffersHitRate, error) {
@@ -14,8 +13,5 @@ func (s *Service) ClusterBuffersHitRate(ctx context.Context) (sharedBuffers.Buff
 		return sharedBuffers.BuffersHitRate{}, err
 	}
 
-	fmt.Printf("%+v\n", rate)
-
 	return rate, nil
-
 }

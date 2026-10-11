@@ -8,9 +8,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
 	clusterEntities "dashboard/api/internal/model/cluster"
 	databaseEntities "dashboard/api/internal/model/database"
+	metricsEntities "dashboard/api/internal/model/metrics"
 	roleEntities "dashboard/api/internal/model/role"
 
 	"github.com/go-chi/chi/v5"
@@ -81,6 +83,12 @@ type GetStatusResponse struct {
 	User             *string          `json:"user"`
 }
 
+// MetricPoint Single history point of a metric
+type MetricPoint = metricsEntities.SeriesPoint
+
+// MetricsHistory History series of the requested metrics keyed by metric name
+type MetricsHistory = metricsEntities.History
+
 // PostgresSetting Represents some columns from "pg_catalog.pg_settings"
 type PostgresSetting = clusterEntities.Setting
 
@@ -121,6 +129,21 @@ type DatabasesDetailedParamsSort string
 
 // DatabasesDetailedParamsOrder defines parameters for DatabasesDetailed.
 type DatabasesDetailedParamsOrder string
+
+// MetricsHistoryParams defines parameters for MetricsHistory.
+type MetricsHistoryParams struct {
+	// Names Comma separated metric names. All known metrics when omitted.
+	Names *string `form:"names,omitempty" json:"names,omitempty"`
+
+	// From Start of the range (RFC3339). Defaults to the retention window.
+	From *time.Time `form:"from,omitempty" json:"from,omitempty"`
+
+	// To End of the range (RFC3339). Defaults to now.
+	To *time.Time `form:"to,omitempty" json:"to,omitempty"`
+
+	// Limit Maximum number of points per metric. The newest points win.
+	Limit *int `form:"limit,omitempty" json:"limit,omitempty"`
+}
 
 // ClusterConnectJSONRequestBody defines body for ClusterConnect for application/json ContentType.
 type ClusterConnectJSONRequestBody = ClusterConnectData
@@ -163,6 +186,9 @@ type ServerInterface interface {
 	// Get all databases
 	// (GET /databases-detailed)
 	DatabasesDetailed(w http.ResponseWriter, r *http.Request, params DatabasesDetailedParams)
+	// Get metric history
+	// (GET /metrics/history)
+	MetricsHistory(w http.ResponseWriter, r *http.Request, params MetricsHistoryParams)
 }
 
 // Unimplemented server implementation that returns http.StatusNotImplemented for each endpoint.
@@ -232,6 +258,12 @@ func (_ Unimplemented) DatabaseStatsOverview(w http.ResponseWriter, r *http.Requ
 // Get all databases
 // (GET /databases-detailed)
 func (_ Unimplemented) DatabasesDetailed(w http.ResponseWriter, r *http.Request, params DatabasesDetailedParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get metric history
+// (GET /metrics/history)
+func (_ Unimplemented) MetricsHistory(w http.ResponseWriter, r *http.Request, params MetricsHistoryParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -441,6 +473,57 @@ func (siw *ServerInterfaceWrapper) DatabasesDetailed(w http.ResponseWriter, r *h
 	handler.ServeHTTP(w, r)
 }
 
+// MetricsHistory operation middleware
+func (siw *ServerInterfaceWrapper) MetricsHistory(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params MetricsHistoryParams
+
+	// ------------- Optional query parameter "names" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "names", r.URL.Query(), &params.Names)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "names", Err: err})
+		return
+	}
+
+	// ------------- Optional query parameter "from" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "from", r.URL.Query(), &params.From)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "from", Err: err})
+		return
+	}
+
+	// ------------- Optional query parameter "to" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "to", r.URL.Query(), &params.To)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "to", Err: err})
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "limit", r.URL.Query(), &params.Limit)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.MetricsHistory(w, r, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 type UnescapedCookieParamError struct {
 	ParamName string
 	Err       error
@@ -586,6 +669,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/databases-detailed", wrapper.DatabasesDetailed)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/metrics/history", wrapper.MetricsHistory)
 	})
 
 	return r
@@ -943,6 +1029,32 @@ func (response DatabasesDetailed422JSONResponse) VisitDatabasesDetailedResponse(
 	return json.NewEncoder(w).Encode(response)
 }
 
+type MetricsHistoryRequestObject struct {
+	Params MetricsHistoryParams
+}
+
+type MetricsHistoryResponseObject interface {
+	VisitMetricsHistoryResponse(w http.ResponseWriter) error
+}
+
+type MetricsHistory200JSONResponse MetricsHistory
+
+func (response MetricsHistory200JSONResponse) VisitMetricsHistoryResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type MetricsHistory400JSONResponse ErrorBase
+
+func (response MetricsHistory400JSONResponse) VisitMetricsHistoryResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
 	// Connect to Postgres cluster
@@ -978,6 +1090,9 @@ type StrictServerInterface interface {
 	// Get all databases
 	// (GET /databases-detailed)
 	DatabasesDetailed(ctx context.Context, request DatabasesDetailedRequestObject) (DatabasesDetailedResponseObject, error)
+	// Get metric history
+	// (GET /metrics/history)
+	MetricsHistory(ctx context.Context, request MetricsHistoryRequestObject) (MetricsHistoryResponseObject, error)
 }
 
 type StrictHandlerFunc = strictnethttp.StrictHTTPHandlerFunc
@@ -1286,6 +1401,32 @@ func (sh *strictHandler) DatabasesDetailed(w http.ResponseWriter, r *http.Reques
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(DatabasesDetailedResponseObject); ok {
 		if err := validResponse.VisitDatabasesDetailedResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// MetricsHistory operation middleware
+func (sh *strictHandler) MetricsHistory(w http.ResponseWriter, r *http.Request, params MetricsHistoryParams) {
+	var request MetricsHistoryRequestObject
+
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.MetricsHistory(ctx, request.(MetricsHistoryRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "MetricsHistory")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(MetricsHistoryResponseObject); ok {
+		if err := validResponse.VisitMetricsHistoryResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

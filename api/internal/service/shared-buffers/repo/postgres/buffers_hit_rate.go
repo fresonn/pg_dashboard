@@ -7,13 +7,17 @@ import (
 
 const PG_CLUSTER_BUFFER_HIT_RATE_QUERY = `
 SELECT
-    sum(blks_hit) AS hits,
-    sum(blks_read) AS reads,
-    round(
-        100.0 * sum(blks_hit)
-        / NULLIF(sum(blks_hit) + sum(blks_read), 0),
-        2
-    ) AS hit_ratio
+    COALESCE(sum(blks_hit), 0)::bigint AS hits_total,
+    COALESCE(sum(blks_read), 0)::bigint AS reads_total,
+    COALESCE(
+        round(
+            100.0 * sum(blks_hit)
+            / NULLIF(sum(blks_hit) + sum(blks_read), 0),
+            2
+        ),
+        0
+    )::float8 AS hit_ratio,
+    now() AS measured_at
 FROM pg_stat_database;
 `
 
@@ -26,7 +30,7 @@ func (s *Storage) ClusterBuffersHitRate(ctx context.Context) (sharedBuffers.Buff
 
 	var data buffersHitRate
 
-	err = db.Get(&data, PG_CLUSTER_BUFFER_HIT_RATE_QUERY)
+	err = db.GetContext(ctx, &data, PG_CLUSTER_BUFFER_HIT_RATE_QUERY)
 	if err != nil {
 		return sharedBuffers.BuffersHitRate{}, err
 	}

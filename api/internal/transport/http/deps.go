@@ -4,6 +4,7 @@ import (
 	"context"
 	"dashboard/api/internal/model/cluster"
 	"dashboard/api/internal/model/database"
+	metricsEntities "dashboard/api/internal/model/metrics"
 	"dashboard/api/internal/model/role"
 )
 
@@ -28,4 +29,8 @@ type DatabaseService interface {
 
 type RoleService interface {
 	Roles(ctx context.Context) ([]role.RoleView, error)
+}
+
+type MetricsService interface {
+	History(ctx context.Context, filter metricsEntities.HistoryFilter) (metricsEntities.History, error)
 }
