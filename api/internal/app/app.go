@@ -17,6 +17,8 @@ import (
 	databaseStorageRepo "dashboard/api/internal/service/database/repo/storage"
 	"dashboard/api/internal/service/roles"
 	rolesPostgresRepo "dashboard/api/internal/service/roles/repo/postgres"
+	sharedbuffers "dashboard/api/internal/service/shared-buffers"
+	sharedBuffersPostgresRepo "dashboard/api/internal/service/shared-buffers/repo/postgres"
 	httpTransport "dashboard/api/internal/transport/http"
 	"dashboard/api/internal/usecase"
 	"errors"
@@ -83,6 +85,20 @@ func New(cfg config.AppConfig) *App {
 		Cache:           databaseCache,
 		Storage:         databaseStorage,
 	})
+
+	sharedBufferLogger := logger.WithScopeLogger(slogLogger, "shared-buffers")
+	sharedBufferPostgres := sharedBuffersPostgresRepo.New(cfg, sharedBufferLogger, pgManager)
+
+	sharedBuffersService := sharedbuffers.New(sharedbuffers.Options{
+		Config:          cfg,
+		Logger:          sharedBufferLogger,
+		PostgresManager: pgManager,
+		PostgresRepo:    sharedBufferPostgres,
+	})
+
+	// sharedBuffersService.ClusterBuffersHitRate(context.TODO())
+
+	fmt.Println(sharedBuffersService.ClusterBuffersHitRate(context.TODO()))
 
 	useCases := usecase.New(usecase.Options{
 		ClusterService:  clusterService,
