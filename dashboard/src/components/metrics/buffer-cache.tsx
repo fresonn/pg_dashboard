@@ -1,6 +1,8 @@
 import ContentLoader from 'react-content-loader'
+import { useEffect, useState } from 'react'
 import { Typography } from '@/components/ui/typography'
 import { MaybeTooltip } from '@/components/ui/maybe-tooltip'
+import { Spinner } from '@/components/ui/spinner'
 import { cn } from '@/lib/utils'
 import {
   HIT_RATE_DANGER_PERCENT,
@@ -11,10 +13,21 @@ import {
   type BufferMetricScope,
   type HitRateTone
 } from '@/lib/metrics'
-import { useBufferCacheMetrics } from '@/hooks/use-buffer-cache-metrics'
+import { useBufferCacheMetrics, type MetricsStatus } from '@/hooks/use-buffer-cache-metrics'
 
 /** Number of segments of the bar gauge. */
 const GAUGE_SEGMENTS = 24
+
+/**
+ * Cosmetic liveness rhythm of the loader: visible for one second every three
+ * seconds.
+ *
+ * It is deliberately decoupled from the real collection interval: the indicator
+ * is a look-and-feel cue, while the actual stream state is reported by its
+ * tooltip. Change these two constants to change the rhythm.
+ */
+const LIVE_INDICATOR_VISIBLE_MS = 1000
+const LIVE_INDICATOR_PERIOD_MS = 3000
 
 /** Percent step of the scale printed under the gauge (numbers only). */
 const GAUGE_SCALE_STEP = 25
@@ -29,6 +42,13 @@ const TONE_CLASS: Record<HitRateTone, { value: string; bar: string }> = {
   bad: { value: 'text-destructive', bar: 'bg-destructive' },
   warning: { value: 'text-yellow-400', bar: 'bg-yellow-400' },
   good: { value: 'text-theme-color', bar: 'bg-theme-color' }
+}
+
+/** What the live loader next to the value reports. */
+const STATUS_LABEL: Record<MetricsStatus, string> = {
+  connecting: 'Connecting to the metrics stream…',
+  live: 'Live: values arrive from the SSE stream',
+  offline: 'Reconnecting to the metrics stream…'
 }
 
 export function BufferCacheWidgetSkeleton() {
@@ -69,8 +89,15 @@ export function BufferCacheWidgetSkeleton() {
  * and the window hit rate are described in the tooltip.
  */
 export function BufferCacheWidget({ scope = 'cluster' }: { scope?: BufferMetricScope }) {
-  const { cumulativeHitRate, hitRate, lastKnownHitRate, hitsPerSecond, readsPerSecond, windowMs } =
-    useBufferCacheMetrics(scope)
+  const {
+    cumulativeHitRate,
+    hitRate,
+    lastKnownHitRate,
+    hitsPerSecond,
+    readsPerSecond,
+    windowMs,
+    status
+  } = useBufferCacheMetrics(scope)
 
   const rate = cumulativeHitRate
   const windowRate = hitRate ?? lastKnownHitRate
@@ -83,33 +110,73 @@ export function BufferCacheWidget({ scope = 'cluster' }: { scope?: BufferMetricS
 
   const windowSeconds = windowMs === null ? null : (windowMs / 1000).toFixed(1)
 
+  // The loader pulses on its own rhythm, independent of the moments a
+  // measurement actually arrives.
+  const [receiving, setReceiving] = useState(false)
+
+  useEffect(() => {
+    let hideTimer: ReturnType<typeof setTimeout> | undefined
+
+    const pulse = () => {
+      setReceiving(true)
+      hideTimer = setTimeout(() => setReceiving(false), LIVE_INDICATOR_VISIBLE_MS)
+    }
+
+    pulse()
+
+    const interval = setInterval(pulse, LIVE_INDICATOR_PERIOD_MS)
+
+    return () => {
+      clearInterval(interval)
+
+      if (hideTimer !== undefined) clearTimeout(hideTimer)
+    }
+  }, [])
+
   return (
     <div className="flex h-full flex-col">
       <div className="flex items-end gap-2">
-        <MaybeTooltip
-          side="bottom"
-          content={
-            <p>
-              buffer_cache_hit: cumulative ratio calculated by Postgres since the last statistics
-              reset, shown exactly as the API reports it. Red below {HIT_RATE_DANGER_PERCENT}%,
-              amber from {HIT_RATE_DANGER_PERCENT}% to {HIT_RATE_HEALTHY_PERCENT}%, green from{' '}
-              {HIT_RATE_HEALTHY_PERCENT}%.
-              {windowRate !== null &&
-                ` Window rate${windowSeconds ? ` (last ${windowSeconds}s)` : ''}: ${windowRate.toFixed(1)}%.`}
-            </p>
-          }
-        >
-          <Typography
-            variant="h3"
-            as="span"
-            className={cn(
-              'font-semibold tabular-nums',
-              tone ? TONE_CLASS[tone].value : 'text-muted-foreground'
-            )}
+        <div className="flex items-center gap-1.5">
+          <MaybeTooltip
+            side="bottom"
+            content={
+              <p>
+                buffer_cache_hit: cumulative ratio calculated by Postgres since the last statistics
+                reset, shown exactly as the API reports it. Red below {HIT_RATE_DANGER_PERCENT}%,
+                amber from {HIT_RATE_DANGER_PERCENT}% to {HIT_RATE_HEALTHY_PERCENT}%, green from{' '}
+                {HIT_RATE_HEALTHY_PERCENT}%.
+                {windowRate !== null &&
+                  ` Window rate${windowSeconds ? ` (last ${windowSeconds}s)` : ''}: ${windowRate.toFixed(1)}%.`}
+              </p>
+            }
           >
-            {hasRate ? `${rate}%` : '—'}
-          </Typography>
-        </MaybeTooltip>
+            <Typography
+              variant="h3"
+              as="span"
+              className={cn(
+                'font-semibold tabular-nums',
+                tone ? TONE_CLASS[tone].value : 'text-muted-foreground'
+              )}
+            >
+              {hasRate ? `${rate}%` : '—'}
+            </Typography>
+          </MaybeTooltip>
+
+          {/* Liveness cue: a cosmetic pulse (see LIVE_INDICATOR_*), the
+              placeholder keeps the layout stable and stays hoverable while the
+              loader itself is transparent. */}
+          <MaybeTooltip side="bottom" content={<p>{STATUS_LABEL[status]}</p>}>
+            <span className="flex size-3.5 items-center justify-center">
+              <Spinner
+                aria-hidden="true"
+                className={cn(
+                  'text-muted-foreground/50 size-3.5 animate-spin transition-[opacity,transform] duration-150 ease-out',
+                  receiving ? 'scale-100 opacity-100' : 'scale-75 opacity-0'
+                )}
+              />
+            </span>
+          </MaybeTooltip>
+        </div>
 
         {hint && (
           <Typography variant="small" className="text-muted-foreground pb-1">
