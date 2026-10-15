@@ -1,0 +1,46 @@
+{
+  "type": "object",
+  "description": "History series of the requested metrics keyed by metric name",
+  "x-go-type": "metricsEntities.History",
+  "x-go-type-import": { "path": "dashboard/api/internal/model/metrics", "name": "metricsEntities" },
+  "x-go-type-name": "metricsEntities.History",
+  "required": ["series"],
+  "example": {
+    "series": { "buffer_cache_hit": [{ "timestamp": "2026-10-11T18:00:01Z", "value": 98.4 }] }
+  },
+  "properties": {
+    "series": {
+      "type": "object",
+      "description": "Points per metric name, ordered by timestamp",
+      "example": { "connections": [{ "timestamp": "2026-10-11T18:00:00Z", "value": 26 }] },
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "description": "Single history point of a metric",
+          "x-go-type": "metricsEntities.SeriesPoint",
+          "x-go-type-import": {
+            "path": "dashboard/api/internal/model/metrics",
+            "name": "metricsEntities"
+          },
+          "x-go-type-name": "metricsEntities.SeriesPoint",
+          "required": ["timestamp", "value"],
+          "properties": {
+            "timestamp": {
+              "type": "string",
+              "format": "date-time",
+              "example": "2026-10-11T18:00:01Z"
+            },
+            "value": {
+              "type": "number",
+              "description": "Integer metrics keep their integer representation",
+              "example": 98.4
+            }
+          },
+          "x-readme-ref-name": "MetricPoint"
+        }
+      }
+    }
+  },
+  "x-readme-ref-name": "MetricsHistory"
+}

@@ -56,7 +56,7 @@ export type Client = <TData, _TError = unknown, TVariables = unknown>(
   config: RequestConfig<TVariables>
 ) => Promise<ResponseConfig<TData>>
 
-const client = async <TResponse = unknown, TData = unknown, TError = unknown>(
+const client = async <TResponse = unknown, TData = unknown, _TError = unknown>(
   config: RequestConfig<TData>
 ): Promise<ResponseConfig<TResponse>> => {
   const { method, url, params, data, headers = {}, signal } = config

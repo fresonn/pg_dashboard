@@ -1,0 +1,17 @@
+{
+  "type": "object",
+  "description": "Single history point of a metric",
+  "x-go-type": "metricsEntities.SeriesPoint",
+  "x-go-type-import": { "path": "dashboard/api/internal/model/metrics", "name": "metricsEntities" },
+  "x-go-type-name": "metricsEntities.SeriesPoint",
+  "required": ["timestamp", "value"],
+  "properties": {
+    "timestamp": { "type": "string", "format": "date-time", "example": "2026-10-11T18:00:01Z" },
+    "value": {
+      "type": "number",
+      "description": "Integer metrics keep their integer representation",
+      "example": 98.4
+    }
+  },
+  "x-readme-ref-name": "MetricPoint"
+}
