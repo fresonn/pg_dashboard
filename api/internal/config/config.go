@@ -31,6 +31,7 @@ type EnvironmentVars struct {
 	PgPassword string         `env:"PG_PASSWORD"`
 	PgDatabase string         `env:"PG_DATABASE"`
 	PgSSLMode  string         `env:"PG_SSLMODE"`
+	Metrics    MetricsVars    `envPrefix:"METRICS_"`
 }
 
 func New() AppConfig {
@@ -43,6 +44,8 @@ func New() AppConfig {
 	}
 
 	envCfg.IsDev = envCfg.Runtime == DevRuntime
+
+	envCfg.Metrics = envCfg.Metrics.Sanitized()
 
 	persistentCfg, err := configFromEnvs(envCfg)
 	if err != nil {

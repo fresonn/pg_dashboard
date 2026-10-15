@@ -6,6 +6,7 @@ import (
 	"dashboard/api/internal/config"
 	"dashboard/api/internal/helper"
 	infraBadger "dashboard/api/internal/infra/badger"
+	"dashboard/api/internal/infra/hub"
 	"dashboard/api/internal/infra/logger"
 	"dashboard/api/internal/infra/postgres"
 	"dashboard/api/internal/service/cluster"
@@ -15,8 +16,13 @@ import (
 	databaseCache "dashboard/api/internal/service/database/repo/cache"
 	databasePostgresRepo "dashboard/api/internal/service/database/repo/postgres"
 	databaseStorageRepo "dashboard/api/internal/service/database/repo/storage"
+	"dashboard/api/internal/service/metrics"
+	metricsPostgresRepo "dashboard/api/internal/service/metrics/repo/postgres"
+	metricsStorageRepo "dashboard/api/internal/service/metrics/repo/storage"
 	"dashboard/api/internal/service/roles"
 	rolesPostgresRepo "dashboard/api/internal/service/roles/repo/postgres"
+	sharedbuffers "dashboard/api/internal/service/shared-buffers"
+	sharedBuffersPostgresRepo "dashboard/api/internal/service/shared-buffers/repo/postgres"
 	httpTransport "dashboard/api/internal/transport/http"
 	"dashboard/api/internal/usecase"
 	"errors"
@@ -35,10 +41,11 @@ import (
 )
 
 type App struct {
-	config config.AppConfig
-	router http.Handler
-	badger *badger.DB
-	log    logger.Logger
+	config  config.AppConfig
+	router  http.Handler
+	badger  *badger.DB
+	log     logger.Logger
+	metrics *metrics.Service
 }
 
 func New(cfg config.AppConfig) *App {
@@ -84,6 +91,34 @@ func New(cfg config.AppConfig) *App {
 		Storage:         databaseStorage,
 	})
 
+	sharedBufferLogger := logger.WithScopeLogger(slogLogger, "shared-buffers")
+	sharedBufferPostgres := sharedBuffersPostgresRepo.New(cfg, sharedBufferLogger, pgManager)
+
+	sharedBuffersService := sharedbuffers.New(sharedbuffers.Options{
+		Config:          cfg,
+		Logger:          sharedBufferLogger,
+		PostgresManager: pgManager,
+		PostgresRepo:    sharedBufferPostgres,
+	})
+
+	metricsLogger := logger.WithScopeLogger(slogLogger, "metrics")
+	metricsHub := hub.New(hub.Options{
+		Buffer: cfg.Env.Metrics.SubscriberBuffer,
+		Logger: metricsLogger,
+	})
+	metricsPostgres := metricsPostgresRepo.New(cfg, metricsLogger, pgManager)
+	metricsStorage := metricsStorageRepo.New(cfg, metricsLogger, badgerDB)
+
+	metricsService := metrics.New(metrics.Options{
+		Config:        cfg,
+		Logger:        metricsLogger,
+		PgManager:     pgManager,
+		PostgresRepo:  metricsPostgres,
+		SharedBuffers: sharedBuffersService,
+		Hub:           metricsHub,
+		Storage:       metricsStorage,
+	})
+
 	useCases := usecase.New(usecase.Options{
 		ClusterService:  clusterService,
 		DatabaseService: databaseService,
@@ -98,17 +133,23 @@ func New(cfg config.AppConfig) *App {
 		AllowCredentials: true,
 	}))
 
-	restHandler := httpTransport.New(useCases, clusterService, rolesService, databaseService)
+	restHandler := httpTransport.New(useCases, clusterService, rolesService, databaseService, metricsService)
 
 	strictHandler := openapi.NewStrictHandler(restHandler, nil)
 
 	handler := openapi.HandlerFromMuxWithBaseURL(strictHandler, r, "/api")
 
+	// SSE is registered next to the generated router: a strict OpenAPI handler
+	// returns a complete body, while the metrics stream is endless.
+	metricsStreamHandler := httpTransport.NewMetricsStreamHandler(metricsHub, cfg.Env.Metrics, metricsLogger)
+	r.Get(httpTransport.MetricsStreamPath, metricsStreamHandler.ServeHTTP)
+
 	return &App{
-		config: cfg,
-		log:    slogLogger,
-		badger: badgerDB,
-		router: handler,
+		config:  cfg,
+		log:     slogLogger,
+		badger:  badgerDB,
+		router:  handler,
+		metrics: metricsService,
 	}
 }
 
@@ -152,6 +193,12 @@ func (a *App) Run() {
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
 		return server.Shutdown(ctx)
+	})
+
+	// Collectors live as long as the application does, independent of the
+	// number of connected clients.
+	g.Go(func() error {
+		return a.metrics.Run(gCtx)
 	})
 
 	if err := g.Wait(); err != nil {

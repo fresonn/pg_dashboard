@@ -5,6 +5,7 @@ import { Widget } from './common'
 import type { ReactNode } from 'react'
 import { UptimeWidget, UptimeWidgetSkeleton } from './widgets/uptime'
 import { ClusterSettings, ClusterSettingsSkeleton } from './widgets/cluster-settings'
+import { BufferCacheWidget, BufferCacheWidgetSkeleton } from '@/components/metrics/buffer-cache'
 import { AvailableDatabases } from './databases'
 import { RolesWidget, RolesWidgetSkeleton } from './roles'
 
@@ -50,6 +51,13 @@ export function ClusterOverview() {
               skeleton={<RolesWidgetSkeleton />}
             >
               <RolesWidget />
+            </Widget>
+            <Widget
+              title="Buffer cache hit rate"
+              className="col-span-3 row-span-9"
+              skeleton={<BufferCacheWidgetSkeleton />}
+            >
+              <BufferCacheWidget scope="cluster" />
             </Widget>
           </DashboardGrid>
           <div className="w-full pt-10">

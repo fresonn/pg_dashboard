@@ -8,6 +8,8 @@ export type { DatabasesDetailedQueryKey } from './hooks/useDatabasesDetailed.ts'
 export type { DatabasesDetailedSuspenseQueryKey } from './hooks/useDatabasesDetailedSuspense.ts'
 export type { GetStatusQueryKey } from './hooks/useGetStatus.ts'
 export type { GetStatusSuspenseQueryKey } from './hooks/useGetStatusSuspense.ts'
+export type { MetricsHistoryQueryKey } from './hooks/useMetricsHistory.ts'
+export type { MetricsHistorySuspenseQueryKey } from './hooks/useMetricsHistorySuspense.ts'
 export type { PostgresUptimeQueryKey } from './hooks/usePostgresUptime.ts'
 export type { PostgresUptimeSuspenseQueryKey } from './hooks/usePostgresUptimeSuspense.ts'
 export type { PostgresVersionQueryKey } from './hooks/usePostgresVersion.ts'
@@ -65,6 +67,13 @@ export type {
   GetStatusQuery,
   GetStatusQueryResponse,
   GetStatusResponse,
+  MetricPoint,
+  MetricsHistory,
+  MetricsHistory200,
+  MetricsHistory400,
+  MetricsHistoryQuery,
+  MetricsHistoryQueryParams,
+  MetricsHistoryQueryResponse,
   PostgresSetting,
   PostgresUptime200,
   PostgresUptime400,
@@ -103,6 +112,7 @@ export { database } from './clients/database.ts'
 export { databaseStatsOverview } from './clients/databaseStatsOverview.ts'
 export { databasesDetailed } from './clients/databasesDetailed.ts'
 export { getStatus } from './clients/getStatus.ts'
+export { metricsHistory } from './clients/metricsHistory.ts'
 export { postgresUptime } from './clients/postgresUptime.ts'
 export { postgresVersion } from './clients/postgresVersion.ts'
 export { postmasterSettings } from './clients/postmasterSettings.ts'
@@ -138,6 +148,12 @@ export { useGetStatus } from './hooks/useGetStatus.ts'
 export { getStatusSuspenseQueryKey } from './hooks/useGetStatusSuspense.ts'
 export { getStatusSuspenseQueryOptions } from './hooks/useGetStatusSuspense.ts'
 export { useGetStatusSuspense } from './hooks/useGetStatusSuspense.ts'
+export { metricsHistoryQueryKey } from './hooks/useMetricsHistory.ts'
+export { metricsHistoryQueryOptions } from './hooks/useMetricsHistory.ts'
+export { useMetricsHistory } from './hooks/useMetricsHistory.ts'
+export { metricsHistorySuspenseQueryKey } from './hooks/useMetricsHistorySuspense.ts'
+export { metricsHistorySuspenseQueryOptions } from './hooks/useMetricsHistorySuspense.ts'
+export { useMetricsHistorySuspense } from './hooks/useMetricsHistorySuspense.ts'
 export { postgresUptimeQueryKey } from './hooks/usePostgresUptime.ts'
 export { postgresUptimeQueryOptions } from './hooks/usePostgresUptime.ts'
 export { usePostgresUptime } from './hooks/usePostgresUptime.ts'

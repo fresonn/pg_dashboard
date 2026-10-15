@@ -12,6 +12,8 @@ tags:
     description: Everything related to Postgres database level settings and objects
   - name: role
     description: Everything related to Postgres role level settings and objects
+  - name: metrics
+    description: Everything related to metric collection, history and streaming
 paths:
   /cluster/status:
     get:
@@ -387,8 +389,120 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/RequestValidationError"
+  /metrics/history:
+    get:
+      tags:
+        - metrics
+      summary: Get metric history
+      description: >
+        Returns stored points of the requested metrics. Live values arrive from
+        the SSE stream (`GET /api/metrics/stream`), this endpoint provides the
+        initial series and repairs gaps after a reconnect. To avoid gaps and
+        duplicates, fetch the history up to the moment of subscribing and apply
+        incoming live samples only when their timestamp is newer than the last
+        stored point.
+      operationId: MetricsHistory
+      parameters:
+        - name: names
+          in: query
+          required: false
+          description: Comma separated metric names. All known metrics when omitted.
+          schema:
+            type: string
+          example: buffer_cache_hit,connections
+        - name: from
+          in: query
+          required: false
+          description: Start of the range (RFC3339). Defaults to the retention window.
+          schema:
+            type: string
+            format: date-time
+          example: "2026-10-11T18:00:00Z"
+        - name: to
+          in: query
+          required: false
+          description: End of the range (RFC3339). Defaults to now.
+          schema:
+            type: string
+            format: date-time
+          example: "2026-10-11T18:30:00Z"
+        - name: limit
+          in: query
+          required: false
+          description: Maximum number of points per metric. The newest points win.
+          schema:
+            type: integer
+          example: 600
+      responses:
+        "200":
+          description: Metric history
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MetricsHistory"
+              example:
+                series:
+                  buffer_cache_hit:
+                    - timestamp: "2026-10-11T18:00:01Z"
+                      value: 98.4
+                  connections:
+                    - timestamp: "2026-10-11T18:00:00Z"
+                      value: 26
+        "400":
+          description: Attempt to get metric history failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorBase"
 components:
   schemas:
+    MetricPoint:
+      type: object
+      description: Single history point of a metric
+      x-go-type: metricsEntities.SeriesPoint
+      x-go-type-import:
+        path: dashboard/api/internal/model/metrics
+        name: metricsEntities
+      x-go-type-name: metricsEntities.SeriesPoint
+      required:
+        - timestamp
+        - value
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          example: "2026-10-11T18:00:01Z"
+        value:
+          type: number
+          description: Integer metrics keep their integer representation
+          example: 98.4
+    MetricsHistory:
+      type: object
+      description: History series of the requested metrics keyed by metric name
+      x-go-type: metricsEntities.History
+      x-go-type-import:
+        path: dashboard/api/internal/model/metrics
+        name: metricsEntities
+      x-go-type-name: metricsEntities.History
+      required:
+        - series
+      example:
+        series:
+          buffer_cache_hit:
+            - timestamp: "2026-10-11T18:00:01Z"
+              value: 98.4
+      properties:
+        series:
+          type: object
+          description: Points per metric name, ordered by timestamp
+          example:
+            connections:
+              - timestamp: "2026-10-11T18:00:00Z"
+                value: 26
+          additionalProperties:
+            type: array
+            items:
+              $ref: "#/components/schemas/MetricPoint"
     ErrorBase:
       type: object
       description: Error part that should be present in all errors

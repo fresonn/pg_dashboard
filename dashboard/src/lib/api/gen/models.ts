@@ -4,6 +4,35 @@
  */
 
 /**
+ * @description Single history point of a metric
+ */
+export type MetricPoint = {
+  /**
+   * @type string, date-time
+   */
+  timestamp: string
+  /**
+   * @description Integer metrics keep their integer representation
+   * @type number
+   */
+  value: number
+}
+
+/**
+ * @description History series of the requested metrics keyed by metric name
+ * @example [object Object]
+ */
+export type MetricsHistory = {
+  /**
+   * @description Points per metric name, ordered by timestamp
+   * @type object
+   */
+  series: {
+    [key: string]: MetricPoint[]
+  }
+}
+
+/**
  * @description Error part that should be present in all errors
  */
 export type ErrorBase = {
@@ -745,4 +774,46 @@ export type DatabasesDetailedQuery = {
   Response: DatabasesDetailed200
   QueryParams: DatabasesDetailedQueryParams
   Errors: DatabasesDetailed400 | DatabasesDetailed422
+}
+
+export type MetricsHistoryQueryParams = {
+  /**
+   * @description Comma separated metric names. All known metrics when omitted.
+   * @type string | undefined
+   */
+  names?: string
+  /**
+   * @description Start of the range (RFC3339). Defaults to the retention window.
+   * @type string | undefined, date-time
+   */
+  from?: string
+  /**
+   * @description End of the range (RFC3339). Defaults to now.
+   * @type string | undefined, date-time
+   */
+  to?: string
+  /**
+   * @description Maximum number of points per metric. The newest points win.
+   * @type integer | undefined
+   */
+  limit?: number
+}
+
+/**
+ * @description Metric history
+ * @example [object Object]
+ */
+export type MetricsHistory200 = MetricsHistory
+
+/**
+ * @description Attempt to get metric history failed
+ */
+export type MetricsHistory400 = ErrorBase
+
+export type MetricsHistoryQueryResponse = MetricsHistory200
+
+export type MetricsHistoryQuery = {
+  Response: MetricsHistory200
+  QueryParams: MetricsHistoryQueryParams
+  Errors: MetricsHistory400
 }

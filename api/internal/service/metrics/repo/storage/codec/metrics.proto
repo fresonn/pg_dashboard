@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package codec;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "storage/codec";
+
+// MetricPoint is a single point of a metric series stored in Badger.
+//
+// The value keeps the int/float distinction of the metrics model, so counters
+// (connections, sizes) never lose precision through a double conversion.
+message MetricPoint {
+  google.protobuf.Timestamp measured_at = 1;
+
+  oneof value {
+    int64 int_value = 2;
+    double float_value = 3;
+  }
+}
