@@ -57,7 +57,7 @@ type fakeSharedBuffers struct {
 	rate  sharedBuffers.BuffersHitRate
 }
 
-func (f *fakeSharedBuffers) ClusterBuffersHitRate(ctx context.Context) (sharedBuffers.BuffersHitRate, error) {
+func (f *fakeSharedBuffers) BuffersHitRate(ctx context.Context) (sharedBuffers.BuffersHitRate, error) {
 
 	f.calls.Add(1)
 
@@ -314,7 +314,11 @@ func newTestEnv(cfg config.MetricsVars) *testEnv {
 
 	env.pg.connections = metricsEntities.ConnectionsStats{Connections: 26, MaxConnections: 100}
 	env.pg.size = metricsEntities.DatabaseSizeStats{Database: "postgres", SizeBytes: 4096}
-	env.buffers.rate = sharedBuffers.BuffersHitRate{HitRatio: 98.4, HitsTotal: 1000, ReadsTotal: 10}
+	env.buffers.rate = sharedBuffers.BuffersHitRate{
+		Cluster:      sharedBuffers.HitRate{HitRatio: 98.4, HitsTotal: 1000, ReadsTotal: 10},
+		Database:     sharedBuffers.HitRate{HitRatio: 91.2, HitsTotal: 400, ReadsTotal: 38},
+		DatabaseName: "appdb",
+	}
 
 	env.service = New(Options{
 		Config: config.AppConfig{
@@ -491,8 +495,28 @@ func TestCollectionIsPublishedAndStored(t *testing.T) {
 	assert.InDelta(t, 98.4, rate.Value.Float(), 0.001)
 	assert.False(t, rate.Timestamp.IsZero())
 
+	// The same query returns the database scope: both levels are published with
+	// their own values and each collection produces both of them.
+	databaseRate := env.publisher.firstByName(t, metricsEntities.NameDatabaseBufferCacheHit)
+	assert.InDelta(t, 91.2, databaseRate.Value.Float(), 0.001)
+	assert.Equal(t, rate.Timestamp, databaseRate.Timestamp)
+
+	databaseHits := env.publisher.firstByName(t, metricsEntities.NameDatabaseBufferHitsTotal)
+	intValue, ok := databaseHits.Value.Int()
+	require.True(t, ok)
+	assert.Equal(t, int64(400), intValue)
+
+	databaseReads := env.publisher.firstByName(t, metricsEntities.NameDatabaseBufferReadsTotal)
+	intValue, ok = databaseReads.Value.Int()
+	require.True(t, ok)
+	assert.Equal(t, int64(38), intValue)
+
+	queries := env.buffers.calls.Load()
+	assert.Equal(t, int(queries), env.publisher.countByName(metricsEntities.NameBufferCacheHit))
+	assert.Equal(t, int(queries), env.publisher.countByName(metricsEntities.NameDatabaseBufferCacheHit))
+
 	connections := env.publisher.firstByName(t, metricsEntities.NameConnections)
-	intValue, ok := connections.Value.Int()
+	intValue, ok = connections.Value.Int()
 	require.True(t, ok)
 	assert.Equal(t, int64(26), intValue)
 

@@ -4,6 +4,7 @@ import (
 	"context"
 	"dashboard/api/internal/config"
 	metricsEntities "dashboard/api/internal/model/metrics"
+	sharedBuffers "dashboard/api/internal/model/shared-buffers"
 	"time"
 )
 
@@ -94,9 +95,14 @@ func (s *Service) collectOnce(ctx context.Context, collector collector) {
 
 // collectBufferCacheHit reuses the shared buffers service, which already owns
 // the pg_stat_database query.
+//
+// A single query returns both scopes (the whole cluster and the connected
+// database), so one collection publishes six measurements: the Cluster Overview
+// widget reads the cluster level, the database overview page reads the database
+// level.
 func (s *Service) collectBufferCacheHit(ctx context.Context) ([]metricsEntities.Update, error) {
 
-	rate, err := s.sharedBuffers.ClusterBuffersHitRate(ctx)
+	rate, err := s.sharedBuffers.BuffersHitRate(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -106,23 +112,56 @@ func (s *Service) collectBufferCacheHit(ctx context.Context) ([]metricsEntities.
 		measuredAt = time.Now().UTC()
 	}
 
+	s.logger.Debug("shared buffers hit rate collected",
+		"database", rate.DatabaseName,
+		"cluster_hit_ratio", rate.Cluster.HitRatio,
+		"database_hit_ratio", rate.Database.HitRatio,
+	)
+
+	updates := scopeUpdates(
+		metricsEntities.NameBufferCacheHit,
+		metricsEntities.NameBufferHitsTotal,
+		metricsEntities.NameBufferReadsTotal,
+		rate.Cluster,
+		measuredAt,
+	)
+
+	return append(updates, scopeUpdates(
+		metricsEntities.NameDatabaseBufferCacheHit,
+		metricsEntities.NameDatabaseBufferHitsTotal,
+		metricsEntities.NameDatabaseBufferReadsTotal,
+		rate.Database,
+		measuredAt,
+	)...), nil
+}
+
+// scopeUpdates maps one scope of a collection result to three measurements:
+// the cumulative ratio and the two counters it is derived from.
+func scopeUpdates(
+	hitRatio metricsEntities.Name,
+	hitsTotal metricsEntities.Name,
+	readsTotal metricsEntities.Name,
+	scope sharedBuffers.HitRate,
+	measuredAt time.Time,
+) []metricsEntities.Update {
+
 	return []metricsEntities.Update{
 		{
-			Name:      metricsEntities.NameBufferCacheHit,
-			Value:     metricsEntities.Float64(rate.HitRatio),
+			Name:      hitRatio,
+			Value:     metricsEntities.Float64(scope.HitRatio),
 			Timestamp: measuredAt,
 		},
 		{
-			Name:      metricsEntities.NameBufferHitsTotal,
-			Value:     metricsEntities.Int64(rate.HitsTotal),
+			Name:      hitsTotal,
+			Value:     metricsEntities.Int64(scope.HitsTotal),
 			Timestamp: measuredAt,
 		},
 		{
-			Name:      metricsEntities.NameBufferReadsTotal,
-			Value:     metricsEntities.Int64(rate.ReadsTotal),
+			Name:      readsTotal,
+			Value:     metricsEntities.Int64(scope.ReadsTotal),
 			Timestamp: measuredAt,
 		},
-	}, nil
+	}
 }
 
 // collectConnections collects two metrics with one query.

@@ -29,7 +29,7 @@ type PostgresRepo interface {
 // The cache hit rate SQL lives there, so the pipeline reuses it instead of
 // duplicating the query.
 type SharedBuffers interface {
-	ClusterBuffersHitRate(ctx context.Context) (sharedBuffers.BuffersHitRate, error)
+	BuffersHitRate(ctx context.Context) (sharedBuffers.BuffersHitRate, error)
 }
 
 // Publisher receives successfully collected measurements.

@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState } from 'react'
 import { metricsHistory } from '@/lib/api/gen'
 import {
-  BUFFER_METRIC,
-  BUFFER_METRIC_NAMES,
+  BUFFER_METRICS,
+  bufferMetricNames,
   counterRate,
   intervalHitRate,
   metricsStreamUrl,
   parseMetricSample,
   parseMetricsBatch,
+  type BufferMetricScope,
   type MetricSample
 } from '@/lib/metrics'
 
@@ -88,7 +89,7 @@ function createModel(): Model {
  * The rates are derived from the cumulative counters published by the backend:
  * hits/s and reads/s are deltas over the actual collection interval.
  */
-export function useBufferCacheMetrics(): BufferCacheMetrics {
+export function useBufferCacheMetrics(scope: BufferMetricScope = 'cluster'): BufferCacheMetrics {
   const [state, setState] = useState<BufferCacheMetrics>(INITIAL_STATE)
 
   const model = useRef<Model>(createModel())
@@ -97,6 +98,12 @@ export function useBufferCacheMetrics(): BufferCacheMetrics {
     let disposed = false
 
     const abort = new AbortController()
+
+    const metrics = BUFFER_METRICS[scope]
+    const historyNames = bufferMetricNames(scope).join(',')
+
+    // A scope switch must not mix the counters of two scopes.
+    model.current = createModel()
 
     const flush = () => {
       if (disposed) return
@@ -122,8 +129,8 @@ export function useBufferCacheMetrics(): BufferCacheMetrics {
     const applySample = (name: string, sample: MetricSample) => {
       const current = model.current
 
-      if (name === BUFFER_METRIC.hitsTotal || name === BUFFER_METRIC.readsTotal) {
-        const counter: Counter = name === BUFFER_METRIC.hitsTotal ? 'hits' : 'reads'
+      if (name === metrics.hitsTotal || name === metrics.readsTotal) {
+        const counter: Counter = name === metrics.hitsTotal ? 'hits' : 'reads'
         const previous = current.counters[counter]
 
         // Monotonic per metric: history seeding and the live snapshot may
@@ -134,7 +141,7 @@ export function useBufferCacheMetrics(): BufferCacheMetrics {
         current.counters[counter] = sample
 
         if (previous) current.windowMs = sample.timestamp - previous.timestamp
-      } else if (name === BUFFER_METRIC.cumulativeHitRate) {
+      } else if (name === metrics.cumulativeHitRate) {
         if (current.cumulative && current.cumulative.timestamp > sample.timestamp) return
 
         current.cumulative = sample
@@ -176,7 +183,7 @@ export function useBufferCacheMetrics(): BufferCacheMetrics {
     const seedFromHistory = async () => {
       try {
         const history = await metricsHistory(
-          { names: BUFFER_METRIC_NAMES.join(','), limit: HISTORY_LIMIT },
+          { names: historyNames, limit: HISTORY_LIMIT },
           { signal: abort.signal }
         )
 
@@ -184,13 +191,13 @@ export function useBufferCacheMetrics(): BufferCacheMetrics {
 
         const series = history?.series ?? {}
 
-        seedCounter('hits', samplesOf(series, BUFFER_METRIC.hitsTotal))
-        seedCounter('reads', samplesOf(series, BUFFER_METRIC.readsTotal))
+        seedCounter('hits', samplesOf(series, metrics.hitsTotal))
+        seedCounter('reads', samplesOf(series, metrics.readsTotal))
 
-        const cumulative = samplesOf(series, BUFFER_METRIC.cumulativeHitRate)
+        const cumulative = samplesOf(series, metrics.cumulativeHitRate)
 
         if (cumulative.length > 0) {
-          applySample(BUFFER_METRIC.cumulativeHitRate, cumulative[cumulative.length - 1])
+          applySample(metrics.cumulativeHitRate, cumulative[cumulative.length - 1])
         }
 
         flush()
@@ -239,7 +246,7 @@ export function useBufferCacheMetrics(): BufferCacheMetrics {
       abort.abort()
       source.close()
     }
-  }, [])
+  }, [scope])
 
   return state
 }

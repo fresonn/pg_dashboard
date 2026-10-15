@@ -10,23 +10,47 @@
  *   event: metrics
  *   data: {"buffer_cache_hit":{"value":99.86,"timestamp":"2026-10-11T22:00:59.792069+03:00"}}
  */
-export const BUFFER_METRIC = {
+/**
+ * Scope of the shared buffers metrics.
+ *
+ * The backend produces both scopes with a single pg_stat_database query:
+ * `cluster` aggregates every database, `database` only the database the
+ * application is connected to (the one the database overview page shows).
+ */
+export type BufferMetricScope = 'cluster' | 'database'
+
+export type BufferMetricSet = {
   /** Cumulative hit ratio calculated by Postgres since the last statistics reset */
-  cumulativeHitRate: 'buffer_cache_hit',
+  cumulativeHitRate: string
   /** Cumulative number of shared buffers hits */
-  hitsTotal: 'buffer_hits_total',
+  hitsTotal: string
   /** Cumulative number of shared buffers reads, i.e. cache misses */
-  readsTotal: 'buffer_reads_total'
-} as const
+  readsTotal: string
+}
 
-export type BufferMetricName = (typeof BUFFER_METRIC)[keyof typeof BUFFER_METRIC]
+/**
+ * Metric families of the shared buffers pipeline, mirroring
+ * `internal/model/metrics` on the backend.
+ */
+export const BUFFER_METRICS: Record<BufferMetricScope, BufferMetricSet> = {
+  cluster: {
+    cumulativeHitRate: 'buffer_cache_hit',
+    hitsTotal: 'buffer_hits_total',
+    readsTotal: 'buffer_reads_total'
+  },
+  database: {
+    cumulativeHitRate: 'database_buffer_cache_hit',
+    hitsTotal: 'database_buffer_hits_total',
+    readsTotal: 'database_buffer_reads_total'
+  }
+}
 
-/** Metric names requested from the history endpoint to bootstrap the widget. */
-export const BUFFER_METRIC_NAMES: BufferMetricName[] = [
-  BUFFER_METRIC.cumulativeHitRate,
-  BUFFER_METRIC.hitsTotal,
-  BUFFER_METRIC.readsTotal
-]
+/** Metric names requested from the history endpoint to bootstrap a widget. */
+export function bufferMetricNames(scope: BufferMetricScope): string[] {
+  const metrics = BUFFER_METRICS[scope]
+
+  return [metrics.cumulativeHitRate, metrics.hitsTotal, metrics.readsTotal]
+}
 
 /**
  * A pair of counter samples only becomes a rate when the samples are close

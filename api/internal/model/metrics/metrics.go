@@ -31,6 +31,15 @@ const (
 	NameBufferHitsTotal Name = "buffer_hits_total"
 	// NameBufferReadsTotal is the cumulative number of shared buffer reads.
 	NameBufferReadsTotal Name = "buffer_reads_total"
+	// NameDatabaseBufferCacheHit is the cumulative shared buffers cache hit ratio
+	// of the database the application is connected to.
+	NameDatabaseBufferCacheHit Name = "database_buffer_cache_hit"
+	// NameDatabaseBufferHitsTotal is the cumulative number of shared buffer hits
+	// of the current database.
+	NameDatabaseBufferHitsTotal Name = "database_buffer_hits_total"
+	// NameDatabaseBufferReadsTotal is the cumulative number of shared buffer
+	// reads of the current database.
+	NameDatabaseBufferReadsTotal Name = "database_buffer_reads_total"
 	// NameConnections is the current number of cluster connections.
 	NameConnections Name = "connections"
 	// NameMaxConnections is the configured max_connections value.
@@ -51,6 +60,9 @@ func Names() []Name {
 		NameBufferCacheHit,
 		NameBufferHitsTotal,
 		NameBufferReadsTotal,
+		NameDatabaseBufferCacheHit,
+		NameDatabaseBufferHitsTotal,
+		NameDatabaseBufferReadsTotal,
 		NameConnections,
 		NameMaxConnections,
 		NameDatabaseSize,

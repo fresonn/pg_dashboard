@@ -6,7 +6,7 @@ import (
 )
 
 type PostgresRepo interface {
-	ClusterBuffersHitRate(ctx context.Context) (sharedBuffers.BuffersHitRate, error)
+	BuffersHitRate(ctx context.Context) (sharedBuffers.BuffersHitRate, error)
 }
 
 type Storage interface{}

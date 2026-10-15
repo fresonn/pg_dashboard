@@ -23,6 +23,26 @@ PostgreSQL ──► collectors (internal/service/metrics) ──► hub (intern
 | `internal/transport/http/metrics.go` | SSE endpoint, batching window, heartbeat; history REST handler |
 | `internal/service/metrics/repo/storage` | Badger time series (`metric:{name}:{timestamp}`) |
 
+### Metrics
+
+The shared buffers metrics exist on two levels, and both come from a single
+`pg_stat_database` query per collection (see
+`service/shared-buffers/repo/postgres`): the cluster level aggregates every row,
+the database level only the row of the database the application is connected to.
+The database overview page always switches the connection to its database first,
+so the two levels stay consistent.
+
+| Metric | Scope | Interval |
+| --- | --- | --- |
+| `buffer_cache_hit`, `buffer_hits_total`, `buffer_reads_total` | whole cluster | `METRICS_BUFFER_CACHE_HIT_INTERVAL` |
+| `database_buffer_cache_hit`, `database_buffer_hits_total`, `database_buffer_reads_total` | connected database | `METRICS_BUFFER_CACHE_HIT_INTERVAL` (same query) |
+| `connections`, `max_connections` | whole cluster | `METRICS_CONNECTIONS_INTERVAL` (same query) |
+| `database_size` | connected database | `METRICS_DATABASE_SIZE_INTERVAL` |
+
+Ratio metrics are rounded to two decimals by Postgres, so a client prints the
+value exactly as it arrives. Counters are cumulative: per second rates are deltas
+over the actual measurement window.
+
 ### Endpoints
 
 - `GET /api/metrics/stream` — one SSE connection per client for all metrics:

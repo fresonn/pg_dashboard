@@ -8,6 +8,7 @@ import {
   clampPercent,
   formatRate,
   hitRateTone,
+  type BufferMetricScope,
   type HitRateTone
 } from '@/lib/metrics'
 import { useBufferCacheMetrics } from '@/hooks/use-buffer-cache-metrics'
@@ -53,20 +54,23 @@ export function BufferCacheWidgetSkeleton() {
 /**
  * Live shared buffers cache hit rate.
  *
- * The gauge shows buffer_cache_hit exactly as the API reports it: Postgres
- * already rounds the ratio to two decimals, so the number is printed as is and
- * always matches the SSE payload and GET /api/metrics/history (no client side
- * rounding or reformatting). The hint next to it appears only while the first
- * measurement is on its way; the value itself never disappears, so an idle
- * cluster or a reconnecting stream keeps the last number on screen.
+ * The gauge shows the hit ratio of the requested scope exactly as the API
+ * reports it: Postgres already rounds it to two decimals, so the number is
+ * printed as is and always matches the SSE payload and GET /api/metrics/history
+ * (no client side rounding or reformatting). The hint next to it appears only
+ * while the first measurement is on its way; the value itself never disappears,
+ * so an idle cluster or a reconnecting stream keeps the last number on screen.
+ *
+ * `scope="cluster"` reads the cluster wide metric (Cluster Overview),
+ * `scope="database"` the metric of the connected database (database overview).
  *
  * The two plain text stats below are the live traffic: hits/s and misses/s of
  * the last collection window, derived from the cumulative counters. Their window
  * and the window hit rate are described in the tooltip.
  */
-export function BufferCacheWidget() {
+export function BufferCacheWidget({ scope = 'cluster' }: { scope?: BufferMetricScope }) {
   const { cumulativeHitRate, hitRate, lastKnownHitRate, hitsPerSecond, readsPerSecond, windowMs } =
-    useBufferCacheMetrics()
+    useBufferCacheMetrics(scope)
 
   const rate = cumulativeHitRate
   const windowRate = hitRate ?? lastKnownHitRate

@@ -1,6 +1,7 @@
 import { StaticStatsGrid } from '../ui/static-stats-grid'
 import { Widget } from '../ui/widget'
-import { Database, Layers, Sheet, UsersRound } from 'lucide-react'
+import { Database, Gauge, Layers, Sheet, UsersRound } from 'lucide-react'
+import { BufferCacheWidget, BufferCacheWidgetSkeleton } from '@/components/metrics/buffer-cache'
 import { SizeWidget, SizeWidgetSkeleton } from './static/size'
 import { TablesWidget, TablesWidgetSkeleton } from './static/tables'
 import { IndexesWidget, IndexesWidgetSkeleton } from './static/indexes'
@@ -41,6 +42,14 @@ export function Stats({ databaseId }: { databaseId: string }) {
           skeleton={<ConnectionsWidgetSkeleton />}
         >
           <ConnectionsWidget />
+        </Widget>
+        <Widget
+          title="Buffer cache hit rate"
+          icon={<Gauge />}
+          className="col-span-6 row-span-9 lg:col-span-3"
+          skeleton={<BufferCacheWidgetSkeleton />}
+        >
+          <BufferCacheWidget scope="database" />
         </Widget>
       </StaticStatsGrid>
     </div>

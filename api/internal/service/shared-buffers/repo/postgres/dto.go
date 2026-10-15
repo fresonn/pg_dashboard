@@ -6,18 +6,30 @@ import (
 )
 
 type buffersHitRate struct {
-	HitRatio   float64   `db:"hit_ratio"`
-	HitsTotal  int64     `db:"hits_total"`
-	ReadsTotal int64     `db:"reads_total"`
-	MeasuredAt time.Time `db:"measured_at"`
+	DatabaseName       string    `db:"database_name"`
+	ClusterHitsTotal   int64     `db:"cluster_hits_total"`
+	ClusterReadsTotal  int64     `db:"cluster_reads_total"`
+	ClusterHitRatio    float64   `db:"cluster_hit_ratio"`
+	DatabaseHitsTotal  int64     `db:"database_hits_total"`
+	DatabaseReadsTotal int64     `db:"database_reads_total"`
+	DatabaseHitRatio   float64   `db:"database_hit_ratio"`
+	MeasuredAt         time.Time `db:"measured_at"`
 }
 
 func buildBuffersHitRate(db buffersHitRate) sharedBuffers.BuffersHitRate {
 
 	return sharedBuffers.BuffersHitRate{
-		HitRatio:   db.HitRatio,
-		HitsTotal:  db.HitsTotal,
-		ReadsTotal: db.ReadsTotal,
-		Timestamp:  db.MeasuredAt,
+		Cluster: sharedBuffers.HitRate{
+			HitRatio:   db.ClusterHitRatio,
+			HitsTotal:  db.ClusterHitsTotal,
+			ReadsTotal: db.ClusterReadsTotal,
+		},
+		Database: sharedBuffers.HitRate{
+			HitRatio:   db.DatabaseHitRatio,
+			HitsTotal:  db.DatabaseHitsTotal,
+			ReadsTotal: db.DatabaseReadsTotal,
+		},
+		DatabaseName: db.DatabaseName,
+		Timestamp:    db.MeasuredAt,
 	}
 }
